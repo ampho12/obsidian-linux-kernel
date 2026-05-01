@@ -27,3 +27,9 @@ Happiness
 2. Eudomonia -> Pease/Contentment -> seratonin (simplification)
     1. Effort leads to eudomonia
     2. Self expression
+
+
+
+# Understanding Desire
+
+The state of happiness is one that is free of desire. A desire basically moves us away from that state. What if we have the desire to not fulfull desires?
