@@ -1,4 +1,4 @@
-When a structure holds references, it **must** declare lifetimes for those reference members explicitly: 
+When a structure holds references, it **must** declare lifetimes for those reference members **explicitly**: 
 
 ```rust
 struct MyStruct<'a, 'b> {

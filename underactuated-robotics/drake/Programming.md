@@ -158,52 +158,7 @@ model_instance = models[0]
 ```
 
 
-## URDF details
 
-
-In urdf origin property is a pose transform (offset + rotation) from parent from to current frame expressed in parent frame.
-
-
-A joint's origin is transform from parent's frame 
-
-A link's origin cannot be offset. It is either the origin assigned by the loader (e.g. drake, mujoco etc) or the origin of the parent joint. 
-
-
-
-```
-(parent link frame)
-   └── joint <origin>  →  (child link frame)
-                               ├─ visual <origin>      (relative to child link)
-                               ├─ collision <origin>   (relative to child link)
-                               └─ inertial <origin>    (relative to child link)
-
-```
-
-parent and child relation ships are determined using joints. Consider the a 2 dof leg
-
-```xml
-  <joint name="l_hip_pitch" type="revolute">
-    <parent link="torso"/>
-    <child link="l_thigh"/>
-    <origin xyz="0 0.10 0.75" rpy="0 0 0"/>
-    <axis xyz="0 1 0"/>
-    <limit effort="200" lower="-2.5" upper="2.5" velocity="10"/>
-  </joint>
-  <joint name="l_knee_pitch" type="revolute">
-    <parent link="l_thigh"/>
-    <child link="l_shank"/>
-    <origin xyz="0 0 -0.40" rpy="0 0 0"/>
-    <axis xyz="0 1 0"/>
-    <limit effort="200" lower="-2.5" upper="2.5" velocity="10"/>
-  </joint>
-  <joint name="l_ankle_fixed" type="fixed">
-    <parent link="l_shank"/>
-    <child link="l_foot"/>
-    <origin xyz="0 0 -0.40" rpy="0 0 0"/>
-  </joint>
-```
-
-origin in the joint is the transform / offset from the parent's link frame to the joint frame. The child's link frame is coincident with the joint frame
 
 
 

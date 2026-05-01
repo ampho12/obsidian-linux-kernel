@@ -12,6 +12,119 @@ $$
 
 Recall that $u(t + \tau)$ means applying $u(t)$ but turning it "on" at $t + \tau$.
 
+Any LTI system can be written in state space form (TODO: add proof)
+
+$$
+\begin{aligned}
+\dot{x} &= Ax + Bu \\
+y &= Cx + Du
+\end{aligned}
+$$
+
+For now, we will focus on SISO systems. A SISO system implies that there is one scalar input (u(t)) and one scalar output (y(t)). However, we may still have n-dimensional state. Let's unpack this.
+
+## State in LTI Systems
+
+Essentially, state is not real physical quantity, its a mathematical reinterpretation of existing dynamics that
+1. Rewrites order-n dynamics in 1 dimension as first-order dynamics in n-dimensions
+2. A way to capture system memory (i.e minimum information at time $t$ needed to predict all future behavior for any input $u(t)$).
+
+Consider the following n-th order dynamics
+
+$$
+y^{(n)}(t)
++ a_{n-1}y^{(n-1)}(t)
++ a_{n-2}y^{(n-2)}(t)
++ \cdots 
++ a_{0}y(t)
+=
+b_0u(t)
+$$
+
+We can introduce a variable for state
+$$
+x = \begin{bmatrix}
+y \\
+y^{(1)} \\
+y^{(2)} \\
+\vdots \\
+y^{(n-1)} \\
+\end{bmatrix}
+$$
+This gives 
+$$
+\frac{d}{dt} x_n = y^{(n)}(t) = 
+- a_{n-1}y^{(n-1)}(t)
+- a_{n-2}y^{(n-2)}(t)
+- \cdots 
+- a_{0}y(t)
++ b_0u(t)
+$$
+
+We can put this together in a matrix equation
+$$
+\dot{x} = Ax + Bu
+$$
+where
+$$
+A = \begin{bmatrix}
+0 & 1 & 0 & \ldots & 0 \\
+0 & 0 & 1 & \ldots & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & 0 & \ldots & 1 \\
+-a_0 & -a_1 & 0 & \ldots & -a_{n-1}
+\end{bmatrix}
+$$
+and
+$$
+B = \begin{bmatrix}
+0 \\
+0 \\
+\vdots \\
+0 \\
+b_0
+\end{bmatrix}
+$$
+
+## LTI System Response
+
+Let's find the solution of $\dot{x} = Ax + Bu$
+
+This is
+
+$$
+x(t) = 
+e^{At}x(0) + \int e^{A(t - \tau)} Bu(\tau) d\tau
+$$
+Again, state is not real, the system output is given by
+$$
+y(t) = Cx(t) + D(u)
+$$
+i.e
+$$
+y(t) = 
+Ce^{At}x(0) 
++ C\int e^{A(t - \tau)} Bu(\tau) d\tau
++ Du(t)
+$$
+
+Now, we define two pieces
+
+1. Zero-State Response: 
+$$
+C\int e^{A(t - \tau)} Bu(\tau) d\tau
++ Du(t)
+$$
+1. Zero-Input Response:
+$$
+Ce^{At}x(0) 
+$$
+
+
+
+
+# Zero State Response
+
 
 Now let's talk about impulse responses. An impulse is like a finite force applied across an infinitesimal time horizon. We will not go into the intuition behind this (should be easy to check from other resources). We represent this using the Dirac delta $\delta(t)$, which is an impulse of magnitude 1 applied at $t = 0$.
 
@@ -40,7 +153,7 @@ u(t - \tau) = \begin{cases}
 \end{cases}
 $$
 
-but we will omit this for notational brevity.
+We will omit this for notational brevity, it will be implicit if there is a step function or not.
 
 What if we now apply the input $u(t) = \delta(t) + \delta(t - \pi / 2)$ ?  We know our system is linear so
 $$
@@ -64,7 +177,7 @@ $$
 \int_0^t  f(\tau)\delta(t - \tau) d\tau \mapsto \int_0^t f(\tau) g(t - \tau)d\tau
 $$
 
-Let's slow down and example each integral. The left side is actually just the function $f(t)$, the right side is what we call the convolution operator.
+Let's slow down and examine each integral. The left side is actually just the function $f(t)$, the right side is what we call the convolution operator.
 
 $$
 f(t) \mapsto g(t) * f(t)
@@ -83,7 +196,7 @@ $$
 
 We will dive into more detail here, but the idea is to recover eigenvalues, eigenfunctions, and Laplace transform. This will serve as basis for concepts like Bode, Stability, and analyzing frequency response.
 
-We start by considering the convolution in $e^{st}$ with any function.  $s$ is any complex number. The reason will become clear down the line. For now, it is important to think of $e^{st}$ as a helix in the complex plane with axis along the time dimension.
+We start by considering the convolution in $e^{st}$ with any function.  $s$ is any complex number. The reason will become clear down the line. For now, it is important to think of $e^{st}$ as a helix in the complex plane that wraps about the positive time dimension.
 
 Strictly speaking convolution is over $-\infty$ to $\infty$
 $$
@@ -124,6 +237,58 @@ $$
 
 So if every function is a linear combination of $\delta(t)$, and $\delta$ itself is linear combination of all $e^{st}$, we can study responses to all possible $e^{st}$ to find out response of our system to any function! In practice, most functions can be directly written as a linear combination of $e^{st}$ so we can skip the $\delta(t)$ indirection.
 
+
+# Interpreting the Transfer function
+
+The transfer function describes how a **time-domain input** maps to a **time-domain output** through a linear time-invariant (LTI) system.
+
+Consider the example  
+$$
+G(s) = \frac{(s + a)(s + b)(s + c)}{(s + d)(s + e)}.
+$$
+
+Since the degree of the numerator is higher than that of the denominator, we can perform **polynomial division** and express $G(s)$ as a sum of a polynomial and a strictly proper rational function. After partial-fraction decomposition, it can be written in the form
+$$
+G(s)
+=
+a_n s^n
++ a_{n-1} s^{n-1}
++ \cdots
++ a_0
++ \frac{c_1}{s + b_1}
++ \frac{c_2}{s + b_2}
++ \frac{c_3}{s + b_3}
++ \cdots
+$$
+
+### Interpretation of the terms
+1. The constant term $a_0$ corresponds to a **static gain**, scaling the input.
+2. Multiplication by $s^k$ in the Laplace domain corresponds to the **$k$-th time derivative** in the time domain (assuming zero initial conditions).
+3. Each term of the form $\frac{1}{s + b_i}$, with $b_i > 0$, represents a **stable first-order mode** whose impulse response is an exponentially decaying function $e^{-b_i t}$.
+
+### Time-domain response
+Let $u(t)$ be the input. The output $y(t) = g(t) * u(t)$ (convolution with the impulse response) can be written as
+$$
+\begin{aligned}
+y(t) ={}&
+a_n \, \frac{d^n u(t)}{dt^n}
++ a_{n-1} \, \frac{d^{n-1} u(t)}{dt^{n-1}}
++ \cdots
++ a_0 \, u(t) \\
+&\quad
++ c_1 \int_0^t e^{-b_1 (t-\tau)} u(\tau)\, d\tau
++ c_2 \int_0^t e^{-b_2 (t-\tau)} u(\tau)\, d\tau
++ c_3 \int_0^t e^{-b_3 (t-\tau)} u(\tau)\, d\tau
++ \cdots
+\end{aligned}
+$$
+
+
+
+This means,
+
+
+
 # Practical Stuff (Stability)
 
 
@@ -163,9 +328,31 @@ What happens if we feed this into the system again? The output would amplify and
 
 This is an instability. More precisely, whenever the output grows exponentially, the system is unstable.
 
-In general there are two types of instabilities
-1. disturbance instability: when even small impulse disturbances can balloon out of control.
-2. feedback instability: when the feedback compounds the input, causing the output to grow exponentially.
+System is unstable if there are Poles in the RHP for the closed loop transfer function. If so, the A matrix has at least one eignvalue with a positive real component.
+
+Instability can be caused by many things
+
+1. The system is unstable and the controller does not stabilize it.
+2. The controller has too much gain cause some poles to shift into RHP
+3. The controller has too much phase lag, causing poles to shift into RHP.
+4. The controller is poorly designed.
+
+At the end of the day, the goal is to make controller that can take an A matrix and change it to an A' matrix whose all eigenvalues are less than 0.
+
+For example, we can choose $u(t) = -Kx(t) + B'u_1(t)$
+
+Now our system is
+$$
+\dot{x} = Ax + Bu = (A - KB)x(t) + B'u_1(t)
+$$
+which we rewrite as
+$$
+\dot{x} = A'x(t) + B'u_1(t)
+$$
+
+Now If all real parts of the eigenvalues of $A'$ are less than 0 we have a stable system. Such an $A'$ is called Hurwitz.
+
+
 
 Both need to be analyzed
 
@@ -193,6 +380,39 @@ We have already built the intuition regarding the feedback instability, here we 
 
 
 
+Yep, that’s the right framing.
+
+* **State space** naturally handles both **SISO and MIMO**:
+  $$\dot x = Ax + Bu,\quad y = Cx + Du$$
+  works with (u\in\mathbb{R}^m), (y\in\mathbb{R}^p) without changing the basic machinery.
+
+* **Bode/Nyquist** in their classic “gain margin / phase margin from a single curve” form are **cleanest for SISO**, because the loop transfer (L(j\omega)) is a single complex number.
+
+For **MIMO**, you don’t throw them away—you **generalize** them:
+
+### MIMO “Bode-like” tools
+
+Instead of a magnitude/phase of a scalar, you look at **singular values** of key transfer matrices:
+
+* Sensitivity:
+  $$S(j\omega) = (I + L(j\omega))^{-1}$$
+* Complementary sensitivity:
+  $$T(j\omega) = L(j\omega)(I + L(j\omega))^{-1}$$
+
+Then you plot (\bar\sigma(S)), (\bar\sigma(T)), etc. This gives “worst-case gain across all directions” in input/output space—basically the MIMO version of robustness/performance.
+
+### MIMO “Nyquist-like” tools
+
+There is a **generalized Nyquist criterion** for MIMO, but it’s not a single Nyquist curve. Common ways it shows up:
+
+* analyze (\det(I + L(s))) encirclements (conceptually similar but scalarized), or
+* use more robust-control-oriented tests ((H_\infty), (\mu)).
+
+### Important nuance
+
+A **state coordinate change** doesn’t decouple the plant’s input–output coupling by itself. If you want “multiple independent SISO loops,” that’s a **controller/decoupler design choice**, and it only works well when coupling is weak or can be compensated.
+
+So: **state-space = general**, **classic Bode/Nyquist = SISO**, **MIMO = use generalized frequency-domain tools (singular values / generalized Nyquist / robust control)**.
 
 
 

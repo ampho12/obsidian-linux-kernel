@@ -1,5 +1,47 @@
 
 
+
+
+
+
+
+
+The idea is that a we have a state machine whose transitions are futures.
+
+Every time we call `next()` on the main state machine, it will delegate to the 
+1. the currently inflight future that is driving the state change
+2. the state itself to produce an inflight future.
+
+Either way, `next()` gives a future that calls poll on the internal future.
+
+
+When we drive the state machine itself, we delegate to the state
+
+The state machine is a stream, so calling `next()` on it returns a `Future` that holds a `&mut Self` to the state machine.
+
+This future will delegate to the per state future via  `&mut Self`. This per state future will return a `(state, result)` pair that indicates which state we landed on and if it was succesful, failure, some other warning etc.
+
+This way, `next()` drives the main state machine to a different state by delegating to either the current state or the inflight transition.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Frontend
 
 

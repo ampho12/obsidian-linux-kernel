@@ -1,8 +1,10 @@
 
-Pinning guarantees that
+Rust defines pinning as follows:
 
-1. The value will not be moved out of that specific place in memory (i.e. bytes will not be copied out)
-2. Pinned value will remain 'valid' at that specific place in memory
+For a pointer, the value it is pointing at, i.e pointee
+
+1. Not be "moved" out of its memory location (i.e the compiler will not copy out the bytes + attach a purely semantic transfer of ownership)
+2. Pointee will remain valid at that memory location
 
 Therefore, in rust, `Pin` guarantees:
 
@@ -10,10 +12,13 @@ Therefore, in rust, `Pin` guarantees:
 
 
 
+## Futures and Pinning
+
+Futures are often pinned. The idea is that when a future is created, it can usually be moved around. However, once it is polled it might have pointers or references to data within itself. If it is moved around at this point, then we will break internal pointers.
 
 If a type doesn't implement the `Unpin` trait, then the only way to construct a `Pin<Ptr>` is to use `new_unchecked` which is unsafe and now its the programmers responsibility to manage the Pin guarantees.
 
-For instance, the following programs shows a way to break pin guarantees
+For instance, the following programs shows a way to break pin guarantees.
 
 ```rust
 use std::task::{Context, Poll};
@@ -57,6 +62,17 @@ fn main() {
 ```
 
 In the first unsafe block, we create a Pin by saying "the programmer has the responsibility to manage the pin". Rust then prevents us from moving out of the pin. However, 
+
+
+## Futures Poll Signature
+
+when implementing a future, we have this siganture for the poll function
+
+```rust
+fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>;
+```
+
+This takes a `Pin<&mut Self>` i.e we an modify the self through this Pin, but not move out of it.
 
 ## Invalidation
 

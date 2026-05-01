@@ -16,7 +16,7 @@ Suppose the configuration space is some manifold M which could be finite dimensi
 
 A configuration is a point in this manifold, this could be $q$ if it is finite or a function $y$ if it's infinite.
 
-A **perturbation** is a test. It is not the actual change, but a test change. It can be along any admissible direction. It can also coincide with the actual change.
+A **perturbation** is a test. It is not the actual change, but a test change. It can be along any admissible direction. It can also coincide with the actual change. 
 
 e.g. the first variation of $f(q)$ checks how f changes if we change q in any admissible direction. even if q evolves as $q^*(t)$, we are free to test any admissible direction which may also coincide with $q^*(t)$.
 
@@ -98,11 +98,61 @@ Let us see an example where we use the concept of variations
 
 ## Principle of Virtual Work
 
+Work is virtual when it is not real, but what is work that is not real? We are familiar with the concept of a perturbation, which is a test displacement, and not real displacement.
+
+If we use the test displacement to capture work, we call it virtual work. i.e
+1. Perturbations = Virtual Displacement
+2. Virtual Work = Work by done by force(s) along a Virtual Displacement/Perturbation.
 
 
+
+We also need to distinguish between 4 types of forces.
+
+1. External vs Internal
+2. Applied vs Constraint
+
+The proper way to think about it is as two independent axes:
+
+**Axis 1: Origin**
+- *Internal*: forces between parts of the system
+- *External*: forces from outside the system
+
+**Axis 2: Character**
+- *Applied/active*: specified constitutively or as given data (gravity, springs, prescribed loads)
+- *Constraint/reactive*: determined by the requirement that constraints be satisfied—not independently specified
+
+These combine into four categories:
+
+|              | Applied                             | Constraint                                                   |
+| ------------ | ----------------------------------- | ------------------------------------------------------------ |
+| **External** | Gravity, prescribed loads           | Normal force from a fixed wall, reaction at a pinned support |
+| **Internal** | Springs, electrostatic interactions | Tension in an inextensible rod, forces maintaining rigidity  |
+
+For equilibrium, we have
+
+$$
+\delta W^{(\text{ext, applied})} 
++ \delta W^{(\text{int, applied})} 
++ \delta W^{(\text{ext, constraint})} 
++ \delta W^{(\text{int, constraint})} 
+= 0
+$$
+
+Finally, the principle of virtual work then says: *ideal* constraint forces (whether internal or external) do no virtual work under **admissible** virtual displacements. What remains is
+
+$$\delta W^{(\text{ext, applied})} + \delta W^{(\text{int, applied})} = 0$$
+
+for equilibrium.
+
+The "ideal" qualifier matters too—friction is a constraint force (it's reactive, determined by the normal force and motion), but
+1. Static Friction: this is ideal as it enforces a constraint
+2. Dynamic Friction: this is not ideal as by this point the constraint is already violated. In fact, it may not be a constraint force at all.
+
+
+### PVW in Generalized Coordinates
 Let q be a configuration of a system and $q \in R^n$.
 
-If we want to find an equilibrium configuration $q*$, it must be that net work done by any external or internal force be zero for all admissible changes of configuration.
+If we want to find an equilibrium configuration $q*$, it must be that net work done by any external or internal force be zero for all admissible virtual displacements.
 
 Consider any force $F_i$ and corresponding displacement be $r_i(q)$. This would capture the work done by moments too as the displacement due to the moments will be capture in $r_i$.
 
@@ -127,23 +177,19 @@ Q_j := \sum_i F_i^T \frac{\partial r_i}{\partial q_j}
 $$
 Notice that $i$ was unbounded, in that we can have ten's of thousands of forces, but $Q_j$ is bounded in that there are as many forces as elements in $q$.
 
-Notice that we can write a transform from basis to generalized coordinates in a matrix form
-
 Thus, we can write
 
 $$
 \delta W = \sum_j Q_j \delta q_j = Q^T \delta q
 $$
+if work $\delta W$ is zero for all admissible $\delta q$, then $Q$ is zero. If $Q$ is zero then $\delta W$ is zero for all admissible $\delta q$.
 
-Now let the residual generalized force $R(q)$ be the result of all external and internal forces. If the system is in equilibrium then R(q) must be zero, otherwise there is a net force. Consider
+i.e
 $$
-\delta W = R(q)^T \delta q
+\text{Zero Virtual Work} \iff \text{Zero Net Generalized Force}
 $$
-if work $\delta W$ is zero for all admissible $\delta q$, then $R(q)$ is zero. If $R(q)$ is zero then $\delta W$ is zero for all admissible $\delta q$.
 
-Note that if we consider reaction forces in the residual, then the corresponding constraint no longer applies. e.g. if we are constraint to move along x axis due to a normal force, then if we include the normal force in R, we are now free to use virtual displacements in y. If we don't include reaction forces, then virtual displacements are admissible only along x.
-
-Internal forces refer to forces between parts of a system 'i.e between two links of a joint'. External forces are those by loads, gravity, tractions etc (but not reaction / constraint forces).
+Note that if we start considering the constraint forces in the net force, then our set of admissible virtual displacements expands to include those virtual displacements that would violate the kinematic constraint enforced by this newly added constraint force. E.g. Imagine we are constraint to move along x axis due to a constraint force along y axis, if we now include the normal force in Q, we can freely use virtual displacements in y as part of the admissible virtual displacements. If we don't include constraint force along y, then virtual displacements are admissible only along x.
 
 # Euler Lagrange Equation
 

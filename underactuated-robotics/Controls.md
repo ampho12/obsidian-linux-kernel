@@ -201,7 +201,7 @@ $$
 Bu
 $$
 
-Now, we compute u that minimizes $\tau_d - Bu$
+Now, we compute u that minimizes $||\tau_d - Bu||$
 
 
 
@@ -262,7 +262,7 @@ $$
 
 Differentiating the constraint twice with respect to time, we get
 $$
-J_c(q),\ddot q + \dot J_c(q,\dot q)\dot q = 0.
+J_c(q) \ddot q + \dot J_c(q,\dot q)\dot q = 0.
 $$
 We can combine this with the dynamics equation to get the constrained dynamics. We simply stack dynamics and the contact acceleration constraint:
 $$
@@ -280,7 +280,7 @@ S^\top \tau - h \\ -\dot J_c \dot q
 \end{bmatrix}.
 $$
 
-This is a **KKT system**. We are usually conserved with how to find the triplet $(\ddot{q}, \lambda, \tau)$. We have the following cases usually
+This is a **KKT system**. We are usually concerned with how to find the triplet $(\ddot{q}, \lambda, \tau)$. We have the following cases usually
 
 | $J_c$ rank         | Forward dynamics $;\tau \to (\ddot q,\lambda)$                                                                                                                                                                                                                                                        | Inverse dynamics $;(\ddot q,\lambda) \to \tau$                                                                                                                      | Inverse dynamics $;\ddot q \to (\lambda,\tau)$                                                                                                                                                                     |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
