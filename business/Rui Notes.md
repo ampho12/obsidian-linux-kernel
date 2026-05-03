@@ -40,7 +40,28 @@ Good answer (even if its is made up): last time we checked they didn't have the 
 
 ## Anticipate every question
 
-Investors are not subject matter experts in what you are doing. 
+Investors are not subject matter experts in what you are doing. They look for preparedness not factual correctness.
 
-Open questino: A lot of investors have a DD partner. Does this mean we have to raise the bar of preparedness.
+1. Unit economics
+2. Financing model
+3. Why X industry
+4. Who are your competitors and how will you beat them.
+5. How will you reach 200 robots
+    1. Contract CM in china -> who is your CM
+
+Open question: A lot of investors have a DD partner. Does this mean we have to raise the bar of preparedness.
+
+Ques
+
+
+
+## Supply Chain
+
+A lot of founders underestimate this when building a hw startup
+
+J
+
+2. 
+- 
+
 
