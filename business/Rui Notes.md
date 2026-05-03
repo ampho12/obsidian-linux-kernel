@@ -51,15 +51,14 @@ Investors are not subject matter experts in what you are doing. They look for pr
 
 Open question: A lot of investors have a DD partner. Does this mean we have to raise the bar of preparedness.
 
-Ques
-
-
 
 ## Supply Chain
 
 A lot of founders underestimate this when building a hw startup
 
-J
+Just saying contract manufacturer is not enough. What are the supply chain risks?
+- do you understand if your cm has fulfilled offers in the past
+- 
 
 2. 
 - 
