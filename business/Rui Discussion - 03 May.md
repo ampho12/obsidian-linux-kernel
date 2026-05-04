@@ -15,13 +15,9 @@ List steps to get there, how each step unlocks the next phase.
 E.g.
 
 1. We want to sell developer kits to 200 industry professionals and researchers.
-2. This unlocks data stream and gets talent acquanted with our platform, while making it more robust.
+2. This unlocks data stream and gets talent acquainted with our platform, while making it more robust.
 3. We use the data and hire aggressively to build a robot for X commercial market.
 4. The tasks we do at X make us an established partner, X will now let us do more tasks, while we can keep doing the task we already did at X in Y and Z markets too.
-
-
-
-
 
 ## Do not be indecisive
 
@@ -58,9 +54,6 @@ A lot of founders underestimate this when building a hw startup
 
 Just saying contract manufacturer is not enough. What are the supply chain risks?
 - do you understand if your cm has fulfilled offers in the past
--  
-
-2. 
-- 
+- who are their suppliers? 
 
 
