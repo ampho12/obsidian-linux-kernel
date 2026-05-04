@@ -403,11 +403,10 @@
       "obsidian-livesync:P2P Replicator": false,
       "obsidian-livesync:Replicate": false,
       "obsidian-livesync:Show Log": false,
-      "obsidian-git:Open Git source control": false,
-      "obsidian-livesync:Show Customization sync": false
+      "obsidian-git:Open Git source control": false
     }
   },
-  "active": "9ed9bc42cb4f5d35",
+  "active": "282371cf481341e7",
   "lastOpenFiles": [
     "business/Andries-Saumya-Asit-Rishabh Summary.md",
     "business/Rui Notes.md",

@@ -58,7 +58,7 @@ A lot of founders underestimate this when building a hw startup
 
 Just saying contract manufacturer is not enough. What are the supply chain risks?
 - do you understand if your cm has fulfilled offers in the past
-- 
+-  
 
 2. 
 - 
