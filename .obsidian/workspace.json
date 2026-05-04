@@ -242,9 +242,19 @@
               "icon": "lucide-file",
               "title": "Rui Notes"
             }
+          },
+          {
+            "id": "36fc09fe1ea7a9c3",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
           }
         ],
-        "currentTab": 16
+        "currentTab": 17
       }
     ],
     "direction": "vertical"
@@ -403,13 +413,14 @@
       "obsidian-livesync:P2P Replicator": false,
       "obsidian-livesync:Replicate": false,
       "obsidian-livesync:Show Log": false,
-      "obsidian-git:Open Git source control": false
+      "obsidian-git:Open Git source control": false,
+      "obsidian-livesync:Show Customization sync": false
     }
   },
-  "active": "282371cf481341e7",
+  "active": "36fc09fe1ea7a9c3",
   "lastOpenFiles": [
-    "business/Andries-Saumya-Asit-Rishabh Summary.md",
     "business/Rui Notes.md",
+    "business/Andries-Saumya-Asit-Rishabh Summary.md",
     "human-nature/Self Discovery.md",
     "human-nature",
     "flag_rebuild.md",
