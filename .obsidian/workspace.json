@@ -256,9 +256,19 @@
               "icon": "lucide-file",
               "title": "Descent Lemma"
             }
+          },
+          {
+            "id": "85cb46a3f44be94f",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
           }
         ],
-        "currentTab": 17
+        "currentTab": 18
       }
     ],
     "direction": "vertical"
@@ -421,10 +431,10 @@
       "obsidian-livesync:Show Customization sync": false
     }
   },
-  "active": "36fc09fe1ea7a9c3",
+  "active": "85cb46a3f44be94f",
   "lastOpenFiles": [
-    "business/Rui Discussion - 03 May.md",
     "machine-learning/notes/Descent Lemma.md",
+    "business/Rui Discussion - 03 May.md",
     "business/Andries-Saumya-Asit-Rishabh Summary.md",
     "human-nature/Self Discovery.md",
     "human-nature",
