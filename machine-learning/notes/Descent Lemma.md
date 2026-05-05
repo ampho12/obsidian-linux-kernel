@@ -16,9 +16,24 @@ By the chain rule
 $$
 \begin{align*}
 g'(t) &= \nabla f(\gamma(t)) \cdot \gamma'(t) \\
-g'(t) &= \nabla f(\gamma(t)) \cdot (y - x) \\
 \end{align*}
 $$
+Giving
+$$
+g(1) - g(0) = \int_0^1 \nabla f(\gamma(t)) \cdot \gamma'(t) dt
+$$
+Adding and subtracting $\nabla f(\gamma(0))$  inside the integral
+$$
+g(1) - g(0) = \int_0^1 \bigg( \nabla f(\gamma(t)) + \nabla f(\gamma(0)) - \nabla f(\gamma(0)) \bigg)\cdot \gamma'(t) dt
+$$
+
+Rearranging
+$$
+g(1) = \underbrace{g(0) + \nabla f(\gamma(0)) \cdot (\gamma(1) - \gamma(0))}_{\text{linear approximation of f at x}} + \underbrace{\int_0^1 \bigg( \nabla f(\gamma(t)) - \nabla f(\gamma(0)) \bigg)\cdot \gamma'(t) dt}_{\text{error from the linear approximation}}
+$$
+
+
+
 
 
 
