@@ -80,3 +80,6 @@ $$\boxed{\,f(y) \leq f(x) + \nabla f(x)^\top (y-x) + \frac{L}{2}\,||y-x||^2\,}$$
 This is the **descent lemma** (also called the *quadratic upper bound* or sometimes the L-smoothness inequality). Geometrically: at every point $x$, the function $f$ is dominated by an upward-opening parabola that touches $f$ at $x$ with the same tangent plane and curvature exactly $L$.
 
 
+## Gradient Descent
+
+Now assume our step is simply $y - x = - \eta \nabla f(x)$, i.e we reduce gradient with some rate $\eta$.
