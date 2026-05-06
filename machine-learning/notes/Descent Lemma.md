@@ -73,7 +73,7 @@ $$\int_0^1 L \, ||\gamma(t) - \gamma(0)|| \cdot ||\gamma'(t)|| \, dt = \int_0^1 
 
 And $\int_0^1 t \, dt = \frac{1}{2}$, so the error term is bounded by $\frac{L}{2}||y-x||^2$.
 
-Translating back to $f$ via $g(0) = f(x)$, $g(1) = f(y)$, $\gamma(0) = x$, $\gamma(1) - \gamma(0) = y - x$:
+Translating back to $f$ via $g(0) = f(x)$, $g(1) = f(y)$, $\gamma(0) = x$, $\gamma(1) - \gamma(0) = y - x$. And replacing dot product with the transpose:
 
 $$\boxed{\,f(y) \leq f(x) + \nabla f(x)^\top (y-x) + \frac{L}{2}\,||y-x||^2\,}$$
 
@@ -82,4 +82,31 @@ This is the **descent lemma** (also called the *quadratic upper bound* or someti
 
 ## Gradient Descent
 
-Now assume our step is simply $y - x = - \eta \nabla f(x)$, i.e we reduce gradient with some rate $\eta$.
+Gradient descent says: from point $x$, move to $y = x - \eta \nabla f(x)$, where $\eta$ is the step size. Substitute this into the descent lemma:
+
+$$f(y) \leq f(x) + \nabla f(x)^\top (y - x) + \frac{L}{2} ||y-x||^2$$
+Compute the pieces:
+- $y - x = -\eta \nabla f(x)$
+- $\nabla f(x)^\top (y-x) = -\eta \, ||\nabla f(x)||^2$
+- $||y - x||^2 = \eta^2 \, ||\nabla f(x)||^2$
+
+Plug in:
+$$f(y) \leq f(x) - \eta \, ||\nabla f(x)||^2 + \frac{L \eta^2}{2} \, ||\nabla f(x)||^2 = f(x) - \eta\left(1 - \frac{L\eta}{2}\right) ||\nabla f(x)||^2$$
+
+For this to be a *decrease* (i.e. $f(y) < f(x)$), we need the coefficient on $||\nabla f(x)||^2$ to be positive:
+
+$$\eta\left(1 - \frac{L\eta}{2}\right) > 0 \quad \Longleftrightarrow \quad 0 < \eta < \frac{2}{L}$$
+
+So **any step size between 0 and 2/L gives guaranteed descent** (assuming $\nabla f(x) \neq 0$, i.e. you're not already at a stationary point). Outside that range, the lemma can't promise anything — you might overshoot so badly that the parabolic bound itself is higher than $f(x)$.
+
+**The optimal step size.** Maximize the decrease by maximizing $\eta(1 - L\eta/2)$ over $\eta$. Take the derivative, set to zero: $1 - L\eta = 0$, so $\eta^\star = 1/L$. This is *exactly the step size that lands you at the minimum of the parabolic upper bound* — which makes sense: if your guarantee is "f is below this parabola," the best you can do is move to the parabola's minimum.
+
+At $\eta = 1/L$, the guaranteed decrease becomes:
+
+$$f(y) \leq f(x) - \frac{1}{2L} ||\nabla f(x)||^2$$
+
+So **every step decreases $f$ by at least $||\nabla f(x)||^2 / (2L)$**. As long as the gradient is nonzero, you make concrete, quantifiable progress. This is what the lemma buys you: not just "loss goes down" but a *specific lower bound* on how much it goes down per step — proportional to gradient magnitude squared, inversely proportional to smoothness.
+
+**The geometric picture.** At $x$, you have $f$ (unknown, possibly horrible) and a parabola sitting above it, touching at $x$. You can't see $f$, but you can see the parabola — so you minimize the parabola. You land at some point $y$. Since $f(y)$ is at most the parabola's value at $y$, and the parabola's minimum is strictly below $f(x)$ (whenever $\nabla f(x) \neq 0$), you've made real progress on $f$ itself. Then you build a new parabola at $y$, repeat. That's gradient descent.
+
+**Why this matters for tuning.** This derivation is *the* reason learning rates around $1/L$ are theoretically motivated. If you set $\eta$ too large (above $2/L$), the upper-bound argument breaks and the algorithm can diverge. If you set it too small, you're being needlessly conservative — guaranteed progress per step shrinks. In practice, $L$ is unknown, which is why people use line search, adaptive methods, or just empirical tuning. But the descent lemma tells you what game you're playing.
