@@ -263,12 +263,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "human-nature/Self Discovery.md",
+                "file": "machine-learning/notes/Descent Lemma.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Self Discovery"
+              "title": "Descent Lemma"
             }
           }
         ],
@@ -437,10 +437,10 @@
   },
   "active": "85cb46a3f44be94f",
   "lastOpenFiles": [
+    "human-nature/Self Discovery.md",
     "machine-learning/notes/Descent Lemma.md",
     "business/Rui Discussion - 03 May.md",
     "business/Andries-Saumya-Asit-Rishabh Summary.md",
-    "human-nature/Self Discovery.md",
     "human-nature",
     "flag_rebuild.md",
     "flag_fetch.md",
