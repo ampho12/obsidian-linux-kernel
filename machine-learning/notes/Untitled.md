@@ -11,7 +11,7 @@ Short answer: **expressivity ≠ trainability**. A network _could_ learn to norm
 
 Three reasons to encode normalization structurally rather than hoping the optimizer rediscovers it:
 
-**Optimization conditioning.** If activations vary across many orders of magnitude, gradients become poorly conditioned. The next layer's weights have to span a huge dynamic range. SGD struggles with this. Normalizing first gives the next layer a well-scaled problem.
+**Optimization conditioning.** If activation vary across many orders of magnitude, gradients become poorly conditioned. The next layer's weights have to span a huge dynamic range. SGD struggles with this. Normalizing first gives the next layer a well-scaled problem.
 
 **Capacity argument.** Without normalization, the next layer spends some of its weights learning to handle nuisance variables (scale drift, mean shift) before it can solve the actual task. The learnable parameters in normalization (γ, β) are tiny — much cheaper than a full layer rediscovering the same function from gradients alone.
 
