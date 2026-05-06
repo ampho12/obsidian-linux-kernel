@@ -107,9 +107,7 @@ $$f(y) \leq f(x) - \frac{1}{2L} ||\nabla f(x)||^2$$
 
 So **every step decreases $f$ by at least $||\nabla f(x)||^2 / (2L)$**. 
 
-Notice that f(y) lower bounds the parabola. So if we jump the to minimum of the parabola in $\eta$, then we are at $f(y)$, which is lower than the 
+Notice that f(y) lower bounds the parabola. So if we jump the to minimum of the parabola in $\eta$, then we are at $f(y)$, which is at most the minima of the parabola.
 
-
-**The geometric picture.** At $x$, you have $f$ (unknown, possibly horrible) and a parabola sitting above it, touching at $x$. You can't see $f$, but you can see the parabola — so you minimize the parabola. You land at some point $y$. Since $f(y)$ is at most the parabola's value at $y$, and the parabola's minimum is strictly below $f(x)$ (whenever $\nabla f(x) \neq 0$), you've made real progress on $f$ itself. Then you build a new parabola at $y$, repeat. That's gradient descent.
 
 **Why this matters for tuning.** This derivation is *the* reason learning rates around $1/L$ are theoretically motivated. If you set $\eta$ too large (above $2/L$), the upper-bound argument breaks and the algorithm can diverge. If you set it too small, you're being needlessly conservative — guaranteed progress per step shrinks. In practice, $L$ is unknown, which is why people use line search, adaptive methods, or just empirical tuning. But the descent lemma tells you what game you're playing.
