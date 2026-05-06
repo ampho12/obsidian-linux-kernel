@@ -29,8 +29,6 @@ If gain per layer is g:
 
 For training to work without normalization, every layer's effective gain must stay almost exactly at 1, simultaneously, throughout training. This is the **knife-edge problem**.
 
-### Concrete: where does the breakeven gain come from?
-
 For PyTorch's default `nn.Linear` with ReLU, two factors shrink signal at each layer:
 
 1. **Default init**: weights uniform in [−√(1/fan_in), √(1/fan_in)], variance = 1/(3·fan_in). Signal variance gets multiplied by 1/3 per layer.
