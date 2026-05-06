@@ -105,7 +105,10 @@ At $\eta = 1/L$, the guaranteed decrease becomes:
 
 $$f(y) \leq f(x) - \frac{1}{2L} ||\nabla f(x)||^2$$
 
-So **every step decreases $f$ by at least $||\nabla f(x)||^2 / (2L)$**. As long as the gradient is nonzero, you make concrete, quantifiable progress. This is what the lemma buys you: not just "loss goes down" but a *specific lower bound* on how much it goes down per step — proportional to gradient magnitude squared, inversely proportional to smoothness.
+So **every step decreases $f$ by at least $||\nabla f(x)||^2 / (2L)$**. 
+
+Notice that f(y) lower bounds the parabola. So if we jump the to minimum of the parabola in $\eta$, then we are at $f(y)$, which is lower than the 
+
 
 **The geometric picture.** At $x$, you have $f$ (unknown, possibly horrible) and a parabola sitting above it, touching at $x$. You can't see $f$, but you can see the parabola — so you minimize the parabola. You land at some point $y$. Since $f(y)$ is at most the parabola's value at $y$, and the parabola's minimum is strictly below $f(x)$ (whenever $\nabla f(x) \neq 0$), you've made real progress on $f$ itself. Then you build a new parabola at $y$, repeat. That's gradient descent.
 
