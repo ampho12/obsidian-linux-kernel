@@ -1,10 +1,6 @@
 
 # Why Normalization Works: Study Notes
 
-A self-contained reference on normalization in neural networks — what it does, why it helps, and how the various flavors compare.
-
----
-
 ## 1. The Core Question
 
 If a sufficiently flexible next layer can learn any transformation, why do we explicitly normalize before feeding it inputs? Why not just let the next layer learn the normalization implicitly?
