@@ -109,7 +109,7 @@ So **every step decreases $f$ by at least $||\nabla f(x)||^2 / (2L)$**.
 
 Notice that f(y) lower bounds the parabola. So if we jump the to minimum of the parabola in $\eta$, then we are at $f(y)$, which is at most the minima of the parabola. 
 
-In the following diagram $x$ and $y$ 
+In the following diagram we are not jumping from x to y, we simply show the parabolas at two points x and y. Every descent step, we move from $x$ to $x'$ where $x'$ is the minima of the parabola intersecting $f$ at x.
 
 
 ![[Pasted image 20260506120239.png]]
