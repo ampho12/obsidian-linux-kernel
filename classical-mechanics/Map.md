@@ -395,3 +395,78 @@ The whole structure of continuum mechanics (and classical EM) sits more naturall
 > **An oriented surface is a 2-form. In 3D, Hodge duality identifies it with a covector. Stress is the linear map from this covector to the traction vector — making σ a (2,0)-tensor by geometric necessity, not by convention. Strain is naturally (0,2), eating fiber directions. The natural contraction σ : ε = σⁱʲ εᵢⱼ gives energy density without invoking any further structure.**
 
 That's why the (2,0)/(0,2) typing is the "right" one in a coordinate-free formulation: it makes the strain-stress duality the same operation as the vector-covector pairing, just with two indices instead of one.
+
+Good question — there are two complementary views of "form" and the connection between them is what's missing. Once you see it, the ladder clicks.
+
+## View 1: Algebraic — a form is an antisymmetric multilinear map
+
+This is the "tensor" view:
+
+- **0-form**: scalar (no inputs)
+- **1-form**: linear map V → ℝ — _i.e., literally a covector._ Components α_i.
+- **2-form**: antisymmetric bilinear map V × V → ℝ. Components ω_ij with ω_ij = −ω_ji.
+- **3-form** (in 3D): antisymmetric trilinear map V × V × V → ℝ.
+
+So **a 1-form _is_ a covector**, by definition. The terms are synonymous. The word "1-form" just emphasizes that it's at the bottom of a ladder of antisymmetric tensors. A 2-form takes two vectors and gives a scalar; a 3-form takes three; etc. (1-forms are trivially "antisymmetric" because antisymmetry requires at least two slots to swap.)
+
+## View 2: Geometric — a form is an integrand
+
+This is where the "line element / area element / volume element" language comes from:
+
+- **0-form** = function: ∫ over a 0-dim "set" of points means summing values at those points.
+- **1-form** = thing you integrate over **curves**: ∫_C α
+- **2-form** = thing you integrate over **surfaces**: ∫_S ω
+- **3-form** = thing you integrate over **volumes**: ∫_V Ω
+
+A 1-form is "dual to" 1-D curves: feed it a curve, get a number. The phrase "oriented line element" means _the kind of object that line integrals integrate against_. Not a literal little line.
+
+## How the two views connect
+
+At each point of a curve C, the curve has a tangent vector $\dot\gamma$. A 1-form α at that point eats $\dot\gamma$ and gives a scalar $\alpha(\dot\gamma)$. The line integral just accumulates these scalars along the curve:
+
+$$\int_C \alpha ;=; \int_a^b \alpha(\dot\gamma(t)),dt$$
+
+So the algebraic statement ("α eats a vector → scalar") at each point produces the geometric statement ("∫ α gives a scalar from the whole curve") by integration. Same object, two roles.
+
+**Concrete example.** Take a function f(x, y, z). Its differential is the 1-form
+
+$$df = \frac{\partial f}{\partial x}dx + \frac{\partial f}{\partial y}dy + \frac{\partial f}{\partial z}dz$$
+
+At each point, df is a covector. It eats a vector **v** and gives $\nabla f \cdot \mathbf{v}$ — the directional derivative. Integrate along a curve C from A to B:
+
+$$\int_C df = f(B) - f(A)$$
+
+A scalar. The 1-form df "measures the curve" by tallying how much f changes along it.
+
+## The "stack of planes" picture for 1-forms
+
+At each point, a 1-form α is a linear functional. Its **level sets** in V are parallel hyperplanes:
+
+$${v : \alpha(v) = 0},;{v : \alpha(v) = 1},;{v : \alpha(v) = 2}, \ldots$$
+
+Equally spaced parallel planes. The value α(v) counts _how many planes the vector v pierces_. That's where the "stack of planes" intuition comes from:
+
+- The closer-spaced the planes, the larger the form's magnitude.
+- The orientation of the planes encodes the form's "direction".
+- A vector that lies parallel to the planes pierces zero of them → α(v) = 0.
+
+So a 1-form really is a geometric object: a field of parallel-plane stacks, one at each point. It looks nothing like an "arrow", and that visual mismatch with vectors is part of why this picture is unfamiliar at first.
+
+## Up the ladder
+
+|Form|Eats (at a point)|Geometric meaning|Integrates over|
+|---|---|---|---|
+|0-form|nothing|scalar field|points (sums of values)|
+|1-form|1 vector|"stack of planes" — vectors pierce them|curves|
+|2-form|2 vectors|"stack of oriented area patches" — parallelograms fill them|surfaces|
+|3-form (in 3D)|3 vectors|"stack of oriented volume cells" — parallelepipeds fill them|3-volumes|
+
+A k-form at each point is an antisymmetric (0, k)-tensor (the algebra), and the natural geometric object to feed it is a k-dimensional submanifold (the geometry).
+
+## TL;DR
+
+> **A 1-form _is_ a covector** — that's the algebraic side. **A 1-form is also an "integrand for line integrals"** — that's the geometric side. They're the same object playing two roles: at each point a covector, globally something you integrate over curves to get a scalar.
+
+The same dual identity holds at every rung of the ladder: a k-form is _both_ an antisymmetric (0,k)-tensor at each point _and_ the natural integrand over k-dim submanifolds. The two pictures (eating vectors vs. measuring submanifolds) are tied together by integration.
+
+So when I said "1-form = covector (oriented line element / stack of planes)", what I meant was: "a covector — visualized as a stack of planes — that, when integrated along a curve, returns a scalar." The "line element" phrase is the geometric/integrand role; "covector" is the algebraic role.
