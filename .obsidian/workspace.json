@@ -263,12 +263,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "differential-equationos/Variations.md",
+                "file": "underactuated-robotics/Dynamics.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Variations"
+              "title": "Dynamics"
             }
           }
         ],
@@ -437,6 +437,10 @@
   },
   "active": "85cb46a3f44be94f",
   "lastOpenFiles": [
+    "tensor-calculus/Vector Space.md",
+    "tensor-calculus/Norms, Metrics, Inner Products and the Metric Tensor.md",
+    "tensor-calculus/Metric Tensor,and related objects.md",
+    "differential-equationos/Variations.md",
     "machine-learning/notes/Descent Lemma.md",
     "machine-learning/notes/attachments/Pasted image 20260506120239.png",
     "machine-learning/notes/Untitled.md",
@@ -466,9 +470,6 @@
     "underactuated-robotics/Stability.md",
     "underactuated-robotics/Kinematic Analysis.md",
     "underactuated-robotics/Equations.md",
-    "underactuated-robotics/Controls.md",
-    "underactuated-robotics/Dynamics.md",
-    "underactuated-robotics/Recurrence.md",
     "machine-learning/robot-learning",
     "jetpack-nixos",
     "machine-learning/pi0/attachments/Pasted image 20260212021617.png",
