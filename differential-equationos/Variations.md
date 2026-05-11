@@ -160,7 +160,7 @@ Thus, we get virtual work for a set of virtual displacements, $\{ \delta r_i: i 
 $$
 \delta W = \sum_i F_i^T \delta r_i(q)
 $$
-For a choice of general coordinates, we get canonical generalized forces
+For a choice of general coordinates, we can get canonical generalized forces by rewriting as follows:
 $$
 \delta W = \sum_i F_i^T \delta r_i(q)
 $$
@@ -182,7 +182,9 @@ Thus, we can write
 $$
 \delta W = \sum_j Q_j \delta q_j = Q^T \delta q
 $$
-if work $\delta W$ is zero for all admissible $\delta q$, then $Q$ is zero. If $Q$ is zero then $\delta W$ is zero for all admissible $\delta q$.
+Two simple statements follow
+1. if virtual work $\delta W$ is zero for all admissible $\delta q$, then $Q$ is zero. 
+2. If $Q$ is zero then $\delta W$ is zero for all admissible $\delta q$.
 
 i.e
 $$
