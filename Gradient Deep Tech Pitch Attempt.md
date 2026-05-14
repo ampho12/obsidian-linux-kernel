@@ -50,8 +50,8 @@ Now if we capture a constant percentage of the market, our growth is non-linear.
 (show the graph)
 
 Risks: 
-1. Engineering required: between deep tech and execution
-2. Operations: need LOIs from data center customers.
+1. Engineering required: between deep tech and execution - have a great team
+2. Operations: need LOIs from data center customers. - already have LOI
 
 
 ## Scaling across verticals
@@ -63,7 +63,30 @@ If we can build generalizable skills in a data center environment, we can resell
 3. ram insertion, screw insertion -> manufacturing, construction, repairs
 
 
-This is the second source of non-linearity: reselling skills
+This is the second source of non-linearity: build skills that are resellible. This is a deep tech problem.
+
+
 
 risks:
-1. Must engineer software in 
+1. Must engineer with generalization in mind, right from phase 1
+    1. software generalization: engineers who have worked on software for multiple robots/devices e.g. Tesla (3 robots + 5 cars), Amazon (same sw ran on astro and fire tablet),
+    2. hardware generalization: engineers who have built modular hardware: Amazon, Matic, Tesla, Google
+2. Must hire 1-2 key Machine Learning engineer.
+3. Over generalization - this will end up in the research phase. Stick to deep tech, semi generilzation is good enough.
+
+
+
+## Data Scaling
+
+With 2, we would unlock high quality data across multiple industries. Using data, our systems would be superior to others allowing us to capture even more tasks with better guarantees. This is fundamentally a technology lead of 2-4 years.
+
+With this
+1. We can do tasks others can't
+2. We can guarantee better reliability on the same task compared to others
+3. We can learn tasks faster
+
+There is initial research proof, but no scaling laws. This problem is between research and deep tech, leaning towards deep tech.
+
+risks:
+1. Scaling laws need to be established.
+2. Scaling across verticals would need to generate enough data.
