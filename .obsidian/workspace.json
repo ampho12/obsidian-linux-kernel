@@ -277,12 +277,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "business/Gradient Deep Tech Attempt 2.md",
+                "file": "business/Deep Tech Investment Framework.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Gradient Deep Tech Attempt 2"
+              "title": "Deep Tech Investment Framework"
             }
           }
         ],
@@ -445,13 +445,14 @@
       "obsidian-livesync:P2P Replicator": false,
       "obsidian-livesync:Replicate": false,
       "obsidian-livesync:Show Log": false,
-      "obsidian-git:Open Git source control": false
+      "obsidian-git:Open Git source control": false,
+      "obsidian-livesync:Show Customization sync": false
     }
   },
   "active": "7a552d153c99d06e",
   "lastOpenFiles": [
-    "business/Deep Tech Investment Framework.md",
     "business/Gradient Deep Tech Attempt 2.md",
+    "business/Deep Tech Investment Framework.md",
     "Gradient Deep Tech Pitch Attempt.md",
     "business/Han Pitching Notes.md",
     "classical-mechanics/Map.md",
