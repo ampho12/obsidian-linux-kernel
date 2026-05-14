@@ -35,7 +35,7 @@ We would be 2-4 years ahead of everyone else and have cutting edge robots that c
 
 ## Non-Linearity in our Revenue
 
-This comes from 3 places.
+This comes from 3 phases. Timelines follow each other due to engineering challenges.
 
 ## Scaling the vertical
 
@@ -50,9 +50,10 @@ Now if we capture a constant percentage of the market, our growth is non-linear.
 (show the graph)
 
 Risks: 
-1. Engineering required: between deep tech and execution - have a great team
-2. Operations: need LOIs from data center customers. - already have LOI
+1. Engineering required: between deep tech and execution - we absorb this by having a great team
+2. Operations: need LOIs from data center customers. - absorb this by already having LOI
 
+This is part of our seed round plus early A round.
 
 ## Scaling across verticals
 
@@ -65,15 +66,16 @@ If we can build generalizable skills in a data center environment, we can resell
 
 This is the second source of non-linearity: build skills that are resellible. This is a deep tech problem.
 
-
+(show multiple graphs stacked, each graph is same as that of phase 1)
 
 risks:
 1. Must engineer with generalization in mind, right from phase 1
-    1. software generalization: engineers who have worked on software for multiple robots/devices e.g. Tesla (3 robots + 5 cars), Amazon (same sw ran on astro and fire tablet),
-    2. hardware generalization: engineers who have built modular hardware: Amazon, Matic, Tesla, Google
+    1. software generalization: absorb this with engineers who have worked on software for multiple robots/devices e.g. Tesla (3 robots + 5 cars), Amazon (same sw ran on astro and fire tablet),
+    2. hardware generalization: absorb this with engineers who have built modular hardware: Amazon, Matic, Tesla, Google
 2. Must hire 1-2 key Machine Learning engineer.
 3. Over generalization - this will end up in the research phase. Stick to deep tech, semi generilzation is good enough.
 
+this is A round + B round.
 
 
 ## Data Scaling
@@ -90,3 +92,7 @@ There is initial research proof, but no scaling laws. This problem is between re
 risks:
 1. Scaling laws need to be established.
 2. Scaling across verticals would need to generate enough data.
+
+This is C round and beyond.
+
+(insert graph that shows high market capture within same industry, keep stacking from phase 2 graphs, show we acclerate adding more industries, and dominating industries we are already in)
