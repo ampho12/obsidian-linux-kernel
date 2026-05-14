@@ -277,12 +277,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "business/Deep Tech Investment Framework.md",
+                "file": "business/Gradient Deep Tech Attempt 2.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Deep Tech Investment Framework"
+              "title": "Gradient Deep Tech Attempt 2"
             }
           }
         ],
@@ -445,14 +445,14 @@
       "obsidian-livesync:P2P Replicator": false,
       "obsidian-livesync:Replicate": false,
       "obsidian-livesync:Show Log": false,
-      "obsidian-git:Open Git source control": false,
-      "obsidian-livesync:Show Customization sync": false
+      "obsidian-git:Open Git source control": false
     }
   },
   "active": "7a552d153c99d06e",
   "lastOpenFiles": [
-    "Gradient Deep Tech Pitch Attempt.md",
     "business/Deep Tech Investment Framework.md",
+    "business/Gradient Deep Tech Attempt 2.md",
+    "Gradient Deep Tech Pitch Attempt.md",
     "business/Han Pitching Notes.md",
     "classical-mechanics/Map.md",
     "business/Types of Moat.md",
@@ -482,7 +482,6 @@
     "machine-learning/notes/Convolution Architectures.md",
     "machine-learning/notes/Loss Landscape and Convergence.md",
     "jetpack-nixos/Architecture Overview.md",
-    "machine-learning/notes/pose_estimation.md",
     "machine-learning/notes/attachments/Pasted image 20260402003122.png",
     "machine-learning/notes/attachments/Pasted image 20260402003251.png",
     "machine-learning/notes/attachments/Pasted image 20260402000251.png",
