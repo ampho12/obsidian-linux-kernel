@@ -35,6 +35,35 @@ We would be 2-4 years ahead of everyone else and have cutting edge robots that c
 
 ## Non-Linearity in our Revenue
 
-This comes from 3 places
+This comes from 3 places.
 
-1. Say we capture 
+## Scaling the vertical
+
+If we are in a market that is not growing, even if we capture a large chunk of it, our growth is linear.
+
+(todo insert a x axis showing market cap, insert a linearly increasing line asympting at a celing of 30% within the market)
+
+If the market itself is rapidly growing, then our growth becomes non linear. For us, this market is the data center that is projected to 5x in the next 10 years and is the near term source of revenue.
+
+Now if we capture a constant percentage of the market, our growth is non-linear.
+
+(show the graph)
+
+Risks: 
+1. Engineering required: between deep tech and execution
+2. Operations: need LOIs from data center customers.
+
+
+## Scaling across verticals
+
+If we can build generalizable skills in a data center environment, we can resell those skills in other industries with minimal effort
+
+1. racking servers -> racking sheet metal, heavy bricks in construction
+2. cabling a server -> general electrical work
+3. ram insertion, screw insertion -> manufacturing, construction, repairs
+
+
+This is the second source of non-linearity: reselling skills
+
+risks:
+1. Must engineer software in 
