@@ -1,4 +1,4 @@
-# — Background
+# Background
 
 This document grounds the framework's core concepts. The template for pitch construction sits on top of this — these are the conceptual building blocks every section of a pitch refers back to.
 
@@ -46,23 +46,24 @@ A premise takes one of three forms; they can stack:
 **Cross-domain analogy** — structural similarity to another field already in tier 3 that suggests the same dynamic will play out here.
 - Data centers won on Earth by having the most power; the same dynamic will play out in orbit (K2).
 
-The premise must justify the specific classification. Pointing to past breakthroughs argues "not tier 1." Pointing to remaining work argues "not tier 3." A weak premise leaves the field's classification ambiguous; an absent premise leaves the bet unfundable because investors cannot place it on the risk curve.
+The premise must justify the specific classification. Pointing to past breakthroughs argues "not tier 1." Pointing to remaining work argues "not tier 3." 
 
 ---
 
 ## 3. Vision
 
-Vision is a hypothesis about the tier 3 endpoint of the field — a claim about what the field will look like once the work is done. The vision simply exists as an assertion the founder makes; it does not depend on the premise being correct, and it is not derived from any other element of the framework.
+Vision is a hypothesis about the tier 3 endpoint of the field — a claim about what the field will look like once the work is done. 
 
-**Vision and the category being created are the same object.** When the vision is realized, a new category exists in the market. While the vision is still a hypothesis, the category is still a proposed one. There is no separate "category creation" step — the category comes into being as the vision is realized.
+**Vision and the category being created are the same object.** Vision is a region of multiple outcomes. Different companies that enter the region occupy different points within it — and their entry establishes the category in the market.
 
-Vision is a region, not a single point. Multiple specific company outcomes can sit within the same vision region. Different companies that enter the region occupy different points within it — and their entry establishes the category in the market.
+When the vision is realized, a new category exists in the market. While the vision is still a hypothesis, the category is still a proposed one. There is no separate "category creation" step — the category comes into being as the vision is realized.
+
 
 Examples:
 - Varda: orbital manufacturing as a routine industrial process; physical goods from orbit at scale.
 - K2: highest power in orbit drives the orbital economy the way data centers drove the terrestrial one.
 
-**Vision standalone vs. vision in a thesis.** A vision on its own is just a hypothesis — it can be asserted without justification. When the vision appears inside a thesis, it must lean on the premise: the trends, patterns, or analogies that make the vision plausible. A thesis with a vision unsupported by premise reads as fantasy; a thesis with a vision grounded in premise reads as a fundable bet.
+The vision appears inside a thesis, it must lean on the premise: the trends, patterns, or analogies that make the vision plausible. A thesis with a vision unsupported by premise reads as fantasy; a thesis with a vision grounded in premise reads as a fundable bet.
 
 ---
 
@@ -76,7 +77,7 @@ Form:
 >
 > **If we solve risks X, Y, Z**, we will be [N years ahead / cornered-resource holders / dominant in category / etc.] **when the category is established.**
 
-When a category is established, the field has entered tier 3 and many companies are competing in it. The thesis makes a dual claim: by solving the named tier-2 risks before anyone else, the company both **creates the pond** (the category itself comes into being because of the work this company has done) and is the **big fish in it** (the dominant player among smaller fish who enter the category later). Not a big fish in someone else's pond — the maker of the pond, holding the dominant position within it.
+When a category is established, the field has entered tier 3 and many companies are competing in it. The thesis makes a dual claim: by solving the named tier-2 risks before anyone else, the company will be the big fish (dominant player) when the pond is created (the category is established). 
 
 The thesis is conditional. It commits to specific risks and specific consequences. It is not a declaration that the future will happen — it is a wager on what becomes true if specific tier-2 engineering challenges are resolved.
 
