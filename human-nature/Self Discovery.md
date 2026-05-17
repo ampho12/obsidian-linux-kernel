@@ -50,6 +50,13 @@ Feelings:
 3. feeling like if I start a startup no one would join
 4. feeling like if I wasn’t there in the customer meeting, nothing would have changed
 5. feeling like I am “plus one” and not my own identity. feeling unseen
+6. feeling like I need to constantly earn my place to exist. If I am not working, I am replaceable.
+7. march - built robot
+8. april 1/2  smc chat, no go, investor chat, no go, some cable plugging, no vla.
+9. april 2/2 smc chat, no go, hiring no go,
+10. may: smc chat no go, investor no go
+
+am I even needed?
 
 
 
