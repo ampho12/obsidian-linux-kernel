@@ -277,12 +277,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "business/Gradient Deep Tech Attempt 3.md",
+                "file": "business/diary-of-a-cto/Untitled.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Gradient Deep Tech Attempt 3"
+              "title": "Untitled"
             }
           }
         ],
@@ -451,10 +451,14 @@
   },
   "active": "7a552d153c99d06e",
   "lastOpenFiles": [
+    "business/20 Nov 2025.md",
+    "business/diary-of-a-cto/Untitled.md",
+    "business/state-of-union/Dec 14 2025.md",
+    "business/Gradient Deep Tech Attempt 3.md",
+    "business/diary-of-a-cto",
     "business/Gradient Deep Tech Attempt 2.md",
     "business/Untitled 1.md",
     "business/Han Pitching Notes.md",
-    "business/Gradient Deep Tech Attempt 3.md",
     "business/Deep Tech Investment Framework.md",
     "Gradient Deep Tech Pitch Attempt.md",
     "classical-mechanics/Map.md",
@@ -479,10 +483,7 @@
     "flag_fetch.md",
     "Robotics Market.md",
     "business/Leadership.md",
-    "machine-learning/Flow Prediction/optical-flow.md",
-    "machine-learning/Untitled.md",
     "machine-learning/Flow Prediction",
-    "machine-learning/notes/Convolution Architectures.md",
     "machine-learning/notes/attachments/Pasted image 20260402003122.png",
     "machine-learning/notes/attachments/Pasted image 20260402003251.png",
     "machine-learning/notes/attachments/Pasted image 20260402000251.png",
@@ -492,7 +493,6 @@
     "machine-learning/pi0/attachments/Pasted image 20260212021617.png",
     "machine-learning/pi0/attachments",
     "machine-learning/pi0/Untitled.canvas",
-    "machine-learning/act/act.pdf",
     "underactuated-robotics/linear-time-invariant/attachments/Pasted image 20260129020425.png",
     "underactuated-robotics/linear-time-invariant/attachments/spiral 1.png",
     "underactuated-robotics/linear-time-invariant/attachments/spiral.png",
