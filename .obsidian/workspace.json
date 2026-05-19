@@ -258,35 +258,21 @@
             }
           },
           {
-            "id": "85cb46a3f44be94f",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "business/Han Pitching Notes.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Han Pitching Notes"
-            }
-          },
-          {
             "id": "7a552d153c99d06e",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "business/diary-of-a-cto/2026-05-18.md",
+                "file": "underactuated-robotics/Dynamics.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "2026-05-18"
+              "title": "Dynamics"
             }
           }
         ],
-        "currentTab": 19
+        "currentTab": 18
       }
     ],
     "direction": "vertical"
@@ -451,8 +437,10 @@
   },
   "active": "7a552d153c99d06e",
   "lastOpenFiles": [
-    "business/20 Nov 2025.md",
+    "underactuated-robotics/Controls.md",
+    "underactuated-robotics/Dynamics.md",
     "business/diary-of-a-cto/2026-05-18.md",
+    "business/20 Nov 2025.md",
     "business/state-of-union/Dec 14 2025.md",
     "business/Gradient Deep Tech Attempt 3.md",
     "business/diary-of-a-cto",
@@ -464,7 +452,6 @@
     "classical-mechanics/Map.md",
     "business/Types of Moat.md",
     "classical-mechanics/Introduction.md",
-    "underactuated-robotics/Dynamics.md",
     "classical-mechanics/analytical-mechanics/geometric-mechanics",
     "classical-mechanics/analytical-mechanics",
     "classical-mechanics",
@@ -482,7 +469,6 @@
     "flag_rebuild.md",
     "flag_fetch.md",
     "Robotics Market.md",
-    "business/Leadership.md",
     "machine-learning/Flow Prediction",
     "machine-learning/notes/attachments/Pasted image 20260402003122.png",
     "machine-learning/notes/attachments/Pasted image 20260402003251.png",
