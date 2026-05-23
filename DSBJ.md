@@ -24,15 +24,14 @@ Five main technical approaches discussed for server rack insertion:
     - Could serve as demo/iteration before mobile solution
 
 - 2-meter platform with omniballs - simple sliding mechanism
-
-- Server rests on platform, slides into rack on omni-directional balls
-- Provides compliance for final alignment while maintaining vision control
+    - Server rests on platform, slides into rack on omni-directional balls
+    - Provides compliance for final alignment while maintaining vision control
 
 Vision System & Alignment Requirements
 
 Critical technology for all approaches - high-speed camera with precision alignment:
 
-- Current customer (Micro) can position AGV within 1-2cm using ground tape
+- Current customer (SuperMicro) can position AGV within 1-2cm using ground tape
 - End effector must handle final alignment within 10-20mm travel range
 - Server load specs: 500 lbs force (need clarification if mass vs force)
 - Existing server lift (SL500FX) supports this load as design target
