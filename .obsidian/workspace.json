@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "DSBJ.md",
+                "file": "business/diary-of-a-cto/2026-05-24.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "DSBJ"
+              "title": "2026-05-24"
             }
           }
         ]
@@ -180,12 +180,14 @@
       "obsidian-livesync:P2P Replicator": false,
       "obsidian-livesync:Replicate": false,
       "obsidian-livesync:Show Log": false,
-      "obsidian-git:Open Git source control": false
+      "obsidian-git:Open Git source control": false,
+      "obsidian-livesync:Show Customization sync": false
     }
   },
   "active": "433bd1889be81349",
   "lastOpenFiles": [
     "DSBJ.md",
+    "business/diary-of-a-cto/2026-05-24.md",
     "business/Deep Tech Investment Framework.md",
     "machine-learning/notes/Descent Lemma.md",
     "human-nature/Self Discovery.md",
@@ -211,7 +213,6 @@
     "business/diary-of-a-cto",
     "business/Gradient Deep Tech Attempt 2.md",
     "business/Untitled 1.md",
-    "business/Han Pitching Notes.md",
     "classical-mechanics/analytical-mechanics/geometric-mechanics",
     "classical-mechanics/analytical-mechanics",
     "classical-mechanics",
