@@ -20,8 +20,19 @@
               "icon": "lucide-file",
               "title": "2026-05-24"
             }
+          },
+          {
+            "id": "60387f8aa42d2d5b",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -184,10 +195,10 @@
       "obsidian-livesync:Show Customization sync": false
     }
   },
-  "active": "433bd1889be81349",
+  "active": "60387f8aa42d2d5b",
   "lastOpenFiles": [
-    "DSBJ.md",
     "business/diary-of-a-cto/2026-05-24.md",
+    "DSBJ.md",
     "business/Deep Tech Investment Framework.md",
     "machine-learning/notes/Descent Lemma.md",
     "human-nature/Self Discovery.md",
