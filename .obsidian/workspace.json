@@ -30,9 +30,19 @@
               "icon": "lucide-file",
               "title": "New tab"
             }
+          },
+          {
+            "id": "78f6f829ced4b5e0",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -195,7 +205,7 @@
       "obsidian-livesync:Show Customization sync": false
     }
   },
-  "active": "60387f8aa42d2d5b",
+  "active": "78f6f829ced4b5e0",
   "lastOpenFiles": [
     "business/diary-of-a-cto/2026-05-24.md",
     "DSBJ.md",
