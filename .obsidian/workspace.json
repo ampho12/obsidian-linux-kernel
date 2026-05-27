@@ -54,9 +54,19 @@
               "icon": "lucide-file",
               "title": "New tab"
             }
+          },
+          {
+            "id": "c9d044be537a8bdd",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
           }
         ],
-        "currentTab": 3
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -219,7 +229,7 @@
       "obsidian-livesync:Show Customization sync": false
     }
   },
-  "active": "4923a0752a5e4abe",
+  "active": "c9d044be537a8bdd",
   "lastOpenFiles": [
     "business/diary-of-a-cto/2026-05-27.md",
     "business/diary-of-a-cto/2026-05-26.md",
