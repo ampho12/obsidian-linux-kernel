@@ -59,10 +59,14 @@
             "id": "c9d044be537a8bdd",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "business/diary-of-a-cto/2026-05-27.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "2026-05-27"
             }
           }
         ],
