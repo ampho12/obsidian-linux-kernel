@@ -68,9 +68,19 @@
               "icon": "lucide-file",
               "title": "2026-06-01"
             }
+          },
+          {
+            "id": "531099654b07141e",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
           }
         ],
-        "currentTab": 4
+        "currentTab": 5
       }
     ],
     "direction": "vertical"
@@ -233,10 +243,10 @@
       "obsidian-livesync:Show Customization sync": false
     }
   },
-  "active": "c9d044be537a8bdd",
+  "active": "531099654b07141e",
   "lastOpenFiles": [
-    "business/Monaco Meeting.md",
     "business/diary-of-a-cto/2026-06-01.md",
+    "business/Monaco Meeting.md",
     "business/Datacenter Numbers.md",
     "business/diary-of-a-cto/2026-05-27.md",
     "business/diary-of-a-cto/2026-05-26.md",
