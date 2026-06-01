@@ -14,4 +14,10 @@ Sizing the TAM
     1. some folks target IPOd companies (large)
     2. some target Series A and Series B
 2. Industry: high value physical work that is repeatable
-    1. 
+
+
+
+Hannah meets more regularly
+Chloe and Oliver on adhoc strategic stuff
+
+TAM and sequences
