@@ -30,3 +30,16 @@ Here are the links and a clean experiment list.
     
 
 Run 1 before building anything in 2–4 — it tells you whether z is recoverable at all, which decides how much the hybrid and upsampling can buy you.
+
+
+
+
+# Log
+
+Average Pool can only let information passthrough as magintude. Therefore, the network before average pool must encode information as magnitude.
+
+Soft-argmax can average bimodal or multimodal distribution
+
+
+
+
