@@ -40,6 +40,6 @@ Average Pool can only let information passthrough as magintude. Therefore, the n
 
 Soft-argmax can average bimodal or multimodal distribution
 
+Later pixels have larger receptive field, but diluted / compres
 
-
-
+![[Pasted image 20260605181053.png]]
