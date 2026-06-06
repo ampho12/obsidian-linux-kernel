@@ -40,6 +40,6 @@ Average Pool can only let information passthrough as magintude. Therefore, the n
 
 Soft-argmax can average bimodal or multimodal distribution
 
-Later pixels have larger receptive field, but diluted / compres
+Later pixels have larger receptive field, but diluted / compressed information. As a grid of magnitudes must become one magnitude, the network naturally chooses a more high level feature. "Each unit is a low-pass, blurred view of a big region"
 
 ![[Pasted image 20260605181053.png]]
