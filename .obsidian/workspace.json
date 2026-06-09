@@ -75,12 +75,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "business/Human Capital Notes.md",
+                "file": "machine-learning/robot-learning/Evaluation Landscape.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Human Capital Notes"
+              "title": "Evaluation Landscape"
             }
           }
         ],
@@ -243,13 +243,15 @@
       "obsidian-livesync:P2P Replicator": false,
       "obsidian-livesync:Replicate": false,
       "obsidian-livesync:Show Log": false,
-      "obsidian-git:Open Git source control": false
+      "obsidian-git:Open Git source control": false,
+      "obsidian-livesync:Show Customization sync": false
     }
   },
   "active": "531099654b07141e",
   "lastOpenFiles": [
-    "machine-learning/Geometric Prediction with Pretrained Models.md",
     "business/Human Capital Notes.md",
+    "machine-learning/robot-learning/Evaluation Landscape.md",
+    "machine-learning/Geometric Prediction with Pretrained Models.md",
     "machine-learning/attachments/Pasted image 20260605181053.png",
     "machine-learning/attachments",
     "business/SPC-06-04-2026.md",
@@ -275,7 +277,6 @@
     "tensor-calculus/Vector Space.md",
     "optimization/KKT and Constrained Optimization.md",
     "underactuated-robotics/Dynamics.md",
-    "business/diary-of-a-cto/2026-05-22.md",
     "business/diary-of-a-cto",
     "classical-mechanics/analytical-mechanics/geometric-mechanics",
     "classical-mechanics/analytical-mechanics",
