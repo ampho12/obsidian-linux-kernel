@@ -75,12 +75,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "machine-learning/correspondence-problem/Correspondence Problem.md",
+                "file": "machine-learning/correspondence-problem/Untitled.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Correspondence Problem"
+              "title": "Untitled"
             }
           }
         ],
@@ -248,8 +248,9 @@
   },
   "active": "531099654b07141e",
   "lastOpenFiles": [
-    "business/diary-of-a-cto/2026-06-10.md",
     "machine-learning/correspondence-problem/Correspondence Problem.md",
+    "machine-learning/correspondence-problem/Untitled.md",
+    "business/diary-of-a-cto/2026-06-10.md",
     "machine-learning/correspondence-problem",
     "machine-learning/robot-learning/Evaluation Landscape.md",
     "business/Human Capital Notes.md",
@@ -276,7 +277,6 @@
     "underactuated-robotics/URDF.md",
     "underactuated-robotics/linear-time-invariant/Discrete Control.md",
     "machine-learning/notes/Generative Modeling.md",
-    "tensor-calculus/Vector Space.md",
     "business/diary-of-a-cto",
     "classical-mechanics/analytical-mechanics/geometric-mechanics",
     "classical-mechanics/analytical-mechanics",
