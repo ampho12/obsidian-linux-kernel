@@ -45,3 +45,10 @@ Fractional Sales Officer comes on demand
 Arial: Been with FRC, can help do product and marketing.
 
 
+sophia: founder meeting with other companies
+
+chris: pitch narrative and craft deck
+
+amie: data room diligence make sure we have a succesful raise.
+
+
