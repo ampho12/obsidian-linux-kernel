@@ -30,7 +30,7 @@ We need to get our stuff live.
 
 GTM, AE doesn't do anything we need right now.
 
-
+They are really great engineers, but are they building a really great business?
 
 # Emery
 
@@ -38,3 +38,10 @@ Implementation Manager: In between AE and CSM, for complex deployment there is e
 
 
 Have some deals done by the founders where we document the playbook. That's the time to hire.
+
+
+Fractional Sales Officer comes on demand
+
+Arial: Been with FRC, can help do product and marketing.
+
+
