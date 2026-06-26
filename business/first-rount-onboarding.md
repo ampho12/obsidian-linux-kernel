@@ -39,6 +39,9 @@ Implementation Manager: In between AE and CSM, for complex deployment there is e
 
 Have some deals done by the founders where we document the playbook. That's the time to hire.
 
+List for vendor discounts etc tonight.
+
+Do a full deep dive on this deal that we are working on.
 
 Fractional Sales Officer comes on demand
 
@@ -52,3 +55,11 @@ chris: pitch narrative and craft deck
 amie: data room diligence make sure we have a succesful raise.
 
 
+
+Working sessions
+
+30 minutes biweekly or 45 minutes every 3 weeks.
+
+don't hold everything for working session. Think of this like an agenda.
+
+There are quarterly checkin, they need to track their own audits.
