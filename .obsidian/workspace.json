@@ -75,12 +75,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "tensor-calculus/Rotation.md",
+                "file": "actuators/Stepper Motors.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Rotation"
+              "title": "Stepper Motors"
             }
           }
         ],
@@ -243,13 +243,17 @@
       "obsidian-livesync:P2P Replicator": false,
       "obsidian-livesync:Replicate": false,
       "obsidian-livesync:Show Log": false,
-      "obsidian-git:Open Git source control": false
+      "obsidian-git:Open Git source control": false,
+      "obsidian-livesync:Show Customization sync": false
     }
   },
   "active": "531099654b07141e",
   "lastOpenFiles": [
-    "underactuated-robotics/Controls.md",
     "tensor-calculus/Rotation.md",
+    "actuators/Stepper Motors.md",
+    "actuators",
+    "tensor-calculus/Manifolds.md",
+    "underactuated-robotics/Controls.md",
     "business/first-rount-onboarding.md",
     "machine-learning/correspondence-problem/Latent Variable Modelling.md",
     "machine-learning/correspondence-problem/Correspondence Problem.md",
@@ -275,8 +279,6 @@
     "human-nature/Self Discovery.md",
     "business/Leadership.md",
     "machine-learning/Flow Prediction/optical-flow.md",
-    "machine-learning/notes/pose_estimation.md",
-    "machine-learning/notes/Grokking and Reasoning.md",
     "business/diary-of-a-cto",
     "classical-mechanics/analytical-mechanics/geometric-mechanics",
     "classical-mechanics/analytical-mechanics",
@@ -288,7 +290,6 @@
     "machine-learning/notes/attachments/Pasted image 20260402003251.png",
     "machine-learning/notes/attachments/Pasted image 20260402000251.png",
     "machine-learning/notes/attachments",
-    "machine-learning/robot-learning",
     "machine-learning/pi0/attachments/Pasted image 20260212021617.png",
     "machine-learning/pi0/Untitled.canvas",
     "underactuated-robotics/linear-time-invariant/attachments/Pasted image 20260129020425.png",
