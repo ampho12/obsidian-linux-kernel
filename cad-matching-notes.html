@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fitting a measured part to its CAD model</title>
+<style>
+  :root{
+    --paper:#EAEEEF;
+    --sheet:#F8FAFA;
+    --ink:#13181B;
+    --graphite:#59646A;
+    --rule:#C4CDD0;
+    --rule2:#D8DFE1;
+    --wash:#DFE6E7;
+    --measured:#B93C26;
+    --measured-tint:#F2DCD7;
+    --model:#1A6B74;
+    --model-tint:#D5E5E6;
+    --serif: Charter, "Bitstream Charter", "Iowan Old Style", "Source Serif Pro", Georgia, serif;
+    --mono: "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--serif);
+    font-size:18px;
+    line-height:1.64;
+  }
+  .sheet{
+    max-width:53rem;
+    margin:0 auto;
+    background:var(--sheet);
+    border-left:1px solid var(--rule);
+    border-right:1px solid var(--rule);
+    padding:0 clamp(1.1rem,4vw,4.5rem) 6rem;
+  }
+  .col{max-width:35rem;margin-left:auto;margin-right:auto}
+
+  /* ---------- masthead ---------- */
+  header{
+    padding:clamp(2.5rem,7vw,5rem) 0 2.2rem;
+    border-bottom:1px solid var(--ink);
+    margin-bottom:2.6rem;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.68rem;
+    letter-spacing:.19em;
+    text-transform:uppercase;
+    color:var(--graphite);
+  }
+  h1{
+    font-size:clamp(2rem,5.4vw,2.9rem);
+    line-height:1.12;
+    font-weight:600;
+    letter-spacing:-.015em;
+    margin:.8rem 0 .7rem;
+    max-width:15em;
+  }
+  .standfirst{
+    color:var(--graphite);
+    font-size:1.05rem;
+    max-width:32rem;
+    margin:0;
+  }
+
+  /* ---------- sections ---------- */
+  section{margin:0 0 3.2rem}
+  h2{
+    font-size:1.45rem;
+    font-weight:600;
+    letter-spacing:-.01em;
+    line-height:1.22;
+    margin:0 0 1.1rem;
+  }
+  h2 .num{
+    display:block;
+    font-family:var(--mono);
+    font-size:.68rem;
+    font-weight:400;
+    letter-spacing:.19em;
+    color:var(--measured);
+    margin-bottom:.5rem;
+  }
+  .rule{border:0;border-top:1px solid var(--rule);margin:3rem 0}
+  p{margin:0 0 1.1rem}
+  ul,ol{margin:0 0 1.1rem;padding-left:1.35rem}
+  li{margin-bottom:.5rem}
+  strong{font-weight:600}
+  em.term{font-style:normal;font-weight:600}
+  .mono{font-family:var(--mono);font-size:.9em}
+
+  /* ---------- equations ---------- */
+  .eq{
+    display:flex;
+    align-items:baseline;
+    gap:1rem;
+    margin:1.6rem 0;
+    padding:.9rem 1rem;
+    background:var(--paper);
+    border-left:2px solid var(--model);
+  }
+  .eq .body{flex:1;font-size:1.06rem;line-height:1.5}
+  .eq .tag{font-family:var(--mono);font-size:.72rem;color:var(--graphite)}
+  .eq-note{
+    display:block;
+    font-family:var(--mono);
+    font-size:.72rem;
+    letter-spacing:.06em;
+    color:var(--graphite);
+    margin-top:.45rem;
+  }
+
+  /* ---------- aside ---------- */
+  aside{
+    margin:1.8rem 0;
+    padding:1rem 1.1rem;
+    background:var(--wash);
+    border-left:2px solid var(--graphite);
+    font-size:.95rem;
+    line-height:1.58;
+  }
+  aside .tag{
+    display:block;
+    font-family:var(--mono);
+    font-size:.66rem;
+    letter-spacing:.17em;
+    text-transform:uppercase;
+    color:var(--graphite);
+    margin-bottom:.55rem;
+  }
+  aside p:last-child{margin-bottom:0}
+
+  /* ---------- carry-forward ---------- */
+  .carry{
+    margin:1.7rem 0 0;
+    padding-top:.7rem;
+    border-top:1px solid var(--measured);
+    font-size:.97rem;
+  }
+  .carry .tag{
+    font-family:var(--mono);
+    font-size:.66rem;
+    letter-spacing:.17em;
+    text-transform:uppercase;
+    color:var(--measured);
+    margin-right:.6rem;
+  }
+
+  /* ---------- figures ---------- */
+  figure{
+    margin:2.4rem auto;
+    max-width:44rem;
+    position:relative;
+    padding:1.3rem 1.1rem .4rem;
+    background:var(--paper);
+  }
+  figure::before,figure::after{
+    content:"";position:absolute;width:9px;height:9px;
+    border-color:var(--rule);border-style:solid;
+  }
+  figure::before{top:5px;left:5px;border-width:1px 0 0 1px}
+  figure::after{bottom:5px;right:5px;border-width:0 1px 1px 0}
+  .fig-scroll{overflow-x:auto}
+  figure svg{display:block;width:100%;height:auto}
+  figcaption{
+    margin-top:.8rem;
+    font-family:var(--mono);
+    font-size:.72rem;
+    line-height:1.6;
+    letter-spacing:.01em;
+    color:var(--graphite);
+    max-width:38rem;
+  }
+  figcaption b{color:var(--measured);font-weight:400;letter-spacing:.14em;margin-right:.55rem}
+
+  /* ---------- code ---------- */
+  pre{
+    background:var(--ink);
+    color:#E7ECED;
+    font-family:var(--mono);
+    font-size:.82rem;
+    line-height:1.75;
+    padding:1.1rem 1.2rem;
+    overflow-x:auto;
+    margin:1.6rem 0;
+  }
+  pre .c{color:#8FA6A9}
+
+  /* ---------- svg classes ---------- */
+  .s-line{fill:none;stroke:var(--model);stroke-width:1.7}
+  .s-fill{fill:var(--model-tint);stroke:var(--model);stroke-width:1.5}
+  .s-thick{fill:none;stroke:var(--model);stroke-width:4;stroke-linecap:round}
+  .s-dot{fill:var(--model)}
+  .m-dot{fill:var(--measured)}
+  .m-line{fill:none;stroke:var(--measured);stroke-width:1.8}
+  .m-dash{fill:none;stroke:var(--measured);stroke-width:1.3;stroke-dasharray:5 3}
+  .g-line{fill:none;stroke:var(--graphite);stroke-width:1.1}
+  .g-dash{fill:none;stroke:var(--graphite);stroke-width:1.1;stroke-dasharray:5 4}
+  .faint{fill:none;stroke:var(--rule);stroke-width:1.2}
+  .wash-box{fill:var(--wash);stroke:var(--rule);stroke-width:1}
+  .t{font-family:var(--mono);font-size:14px;fill:var(--graphite)}
+  .t-m{fill:var(--measured)}
+  .t-s{fill:var(--model)}
+  .t-i{font-family:var(--serif);font-size:17px;fill:var(--ink)}
+  .t-b{font-family:var(--mono);font-size:14px;fill:var(--ink)}
+
+  @media (max-width:720px){
+    body{font-size:17px}
+    .fig-scroll svg{min-width:600px}
+    figure{padding:1rem .7rem .3rem}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<header class="col">
+  <div class="eyebrow">Notes &nbsp;·&nbsp; Dimensional inspection</div>
+  <h1>Fitting a measured part to its CAD model</h1>
+  <p class="standfirst">How the alignment problem is set up, why the obvious formulation cannot be solved, what replacing points by measures buys, and how the resulting landscape is traversed.</p>
+</header>
+
+<!-- ============================================ 1 -->
+<section class="col">
+  <h2><span class="num">01 — The situation</span>Two things are unknown, and they depend on each other</h2>
+
+  <p>A part comes off the machine and we measure it. A touch probe or a scanner returns points <span class="mono">x₁, …, x_N ∈ ℝ³</span>, expressed in the frame of the measuring machine. Separately we have the part's CAD model: an exact surface <span class="mono">Y ⊂ ℝ³</span>, expressed in the design frame. Nobody recorded how the part was sitting on the table when it was measured.</p>
+
+  <p>Before we can say anything about whether the part is within tolerance, the two descriptions have to be brought into one frame. That means finding a rigid motion <span class="mono">T ∈ SE(3)</span> — a rotation together with a translation, six degrees of freedom, no scaling and no bending — that carries the measured points into the design frame so that they land on the modeled surface.</p>
+
+  <p>So there are two unknowns:</p>
+  <ol>
+    <li>the pose <span class="mono">T</span>;</li>
+    <li>for each measured point, the location on the surface it came from.</li>
+  </ol>
+
+  <p>Either one is easy given the other. With the correspondences known, the pose follows from a small closed-form fit. With the pose known, each correspondence is a nearest-point query against the surface. We start with neither, and that is the whole difficulty.</p>
+
+  <p>These notes proceed in four moves: describe what <span class="mono">Y</span> actually is; write the joint problem down faithfully and identify precisely what makes it intractable; replace each unknown surface location by a probability measure, which removes those obstructions without changing the answer; and then eliminate the measures again to get a descent method on the pose alone. The algorithm that falls out is ICP. The reason for taking the long route is that the route, not the algorithm, explains what the algorithm can and cannot do.</p>
+</section>
+
+<hr class="rule">
+
+<!-- ============================================ 2 -->
+<section class="col">
+  <h2><span class="num">02 — The model</span>What Y is, in enough detail to matter</h2>
+
+  <p>A STEP model stores the part as a <em class="term">boundary representation</em>, or B-rep, which has two layers.</p>
+
+  <p><strong>Geometry</strong> is the surfaces themselves. Each one is a map <span class="mono">S : Ω → ℝ³</span> from a rectangle of parameters <span class="mono">Ω ⊂ ℝ²</span> into space, written <span class="mono">S(u,v)</span>. The catalogue is small and analytic for the most part: planes, cylinders, cones, spheres, tori, plus NURBS patches for freeform shape. Curves work the same way, as maps <span class="mono">C(t)</span> from an interval into space.</p>
+
+  <p><strong>Topology</strong> is what has been trimmed away and what is glued to what. A <em class="term">face</em> is a surface together with closed loops drawn in its <span class="mono">(u,v)</span> domain, marking off the portion that is kept. An <em class="term">edge</em> is a curve shared by two faces. A <em class="term">vertex</em> is a point shared by edges. Faces sewn together along their edges bound a closed solid.</p>
+</section>
+
+<figure>
+ <div class="fig-scroll">
+  <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A parameter rectangle with a trimming loop maps onto a trimmed face in space, adjacent to a second face along a shared edge.">
+    <defs>
+      <marker id="ah1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,1 L9,5 L0,9 z" fill="#59646A"/>
+      </marker>
+    </defs>
+
+    <!-- parameter domain -->
+    <rect class="wash-box" x="48" y="60" width="180" height="170"/>
+    <path class="s-fill" d="M88,118 C106,90 168,94 180,126 C193,164 146,204 111,190 C78,176 70,146 88,118 Z"/>
+    <line class="g-line" x1="48" y1="248" x2="150" y2="248" marker-end="url(#ah1)"/>
+    <line class="g-line" x1="30" y1="230" x2="30" y2="140" marker-end="url(#ah1)"/>
+    <text class="t" x="152" y="252">u</text>
+    <text class="t" x="18" y="134">v</text>
+    <text class="t" x="48" y="278">parameter domain Ω</text>
+    <text class="t t-s" x="98" y="152">kept</text>
+
+    <!-- map arrow -->
+    <line class="g-line" x1="248" y1="145" x2="316" y2="145" marker-end="url(#ah1)"/>
+    <text class="t-i" x="258" y="132">S(u,v)</text>
+
+    <!-- face A -->
+    <path class="s-line" d="M340,95 C400,63 470,72 528,102 L512,208 C448,236 382,230 336,206 Z"/>
+    <path class="s-fill" d="M378,125 C398,103 446,110 456,136 C468,170 430,198 400,186 C372,174 362,146 378,125 Z"/>
+    <!-- face B -->
+    <path class="s-line" d="M528,102 C574,114 604,142 616,164 L594,218 C566,218 538,214 512,208"/>
+    <!-- shared edge -->
+    <path class="s-thick" d="M528,102 C519,142 517,172 512,208"/>
+    <circle class="s-dot" cx="528" cy="102" r="5"/>
+    <circle class="s-dot" cx="512" cy="208" r="5"/>
+
+    <!-- labels -->
+    <line class="g-line" x1="415" y1="152" x2="415" y2="262"/>
+    <text class="t" x="352" y="278">face: kept portion</text>
+    <line class="g-line" x1="521" y1="150" x2="600" y2="120"/>
+    <text class="t" x="604" y="116">edge</text>
+    <line class="g-line" x1="512" y1="208" x2="560" y2="252"/>
+    <text class="t" x="540" y="268">vertex</text>
+    <text class="t t-s" x="336" y="72">Y ⊂ ℝ³</text>
+  </svg>
+ </div>
+ <figcaption><b>Fig. 1</b> Geometry supplies the surface; topology supplies the trimming loop that cuts out the kept portion and the edge along which two faces are joined. Every location on the part is described this way — exactly, and face by face.</figcaption>
+</figure>
+
+<section class="col">
+  <p>Two consequences of this description drive everything that follows.</p>
+
+  <p>The first is that <span class="mono">Y</span> is a compact two-dimensional surface sitting in <span class="mono">ℝ³</span>: exact and described rather than sampled. There is no mesh and no point set. Asking for the closest point of <span class="mono">Y</span> to a given location in space is a well-posed geometric query, answered face by face, and its answer is exact up to floating point. That query will be the workhorse later.</p>
+
+  <p>The second is that <span class="mono">Y</span> is an awkward place to do calculus. It carries no linear structure, because the average of two locations on a curved surface is generally not on the surface. And it admits coordinates only one face at a time: the <span class="mono">(u,v)</span> parameterization is cut off at trimming boundaries and degenerates outright at cone apices and sphere poles.</p>
+
+  <p class="carry"><span class="tag">Carry forward</span><span class="mono">Y</span> is exact and easy to query, but it has no linear structure and no single coordinate system.</p>
+</section>
+
+<hr class="rule">
+
+<!-- ============================================ 3 -->
+<section class="col">
+  <h2><span class="num">03 — The joint problem</span>The faithful statement, and why it cannot be solved</h2>
+
+  <p>The physical story is simple. Each measurement came from one particular location <span class="mono">yᵢ ∈ Y</span> on the modeled surface, and was observed with noise after the part was placed by some unknown <span class="mono">T</span>. Writing the total squared deviation:</p>
+
+  <div class="eq">
+    <div class="body">E(T, y₁, …, y_N) &nbsp;=&nbsp; Σᵢ ‖T(xᵢ) − yᵢ‖²
+      <span class="eq-note">minimize over T ∈ SE(3) and y₁,…,y_N ∈ Y</span></div>
+    <div class="tag">(1)</div>
+  </div>
+
+  <p>This is the correct problem. It is also unusable, and it pays to be exact about why, because the repair is aimed at these specific points and nothing else.</p>
+</section>
+
+<figure>
+ <div class="fig-scroll">
+  <svg viewBox="0 0 700 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Measured points in the wrong frame, and the same points after the rigid motion brings them onto the model.">
+    <defs>
+      <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,1 L9,5 L0,9 z" fill="#59646A"/>
+      </marker>
+    </defs>
+
+    <!-- LEFT: model outline -->
+    <g>
+      <path class="s-line" d="M40,225 L40,135 L70,135 L70,105 Q70,95 80,95 L130,95 Q140,95 140,105 L140,165 L190,165 L190,225 Z"/>
+      <text class="t t-s" x="40" y="252">model Y (design frame)</text>
+      <!-- measured cloud, wrong pose -->
+      <g transform="rotate(-19 120 150) translate(34,-26)">
+        <circle class="m-dot" cx="40" cy="225" r="4.2"/><circle class="m-dot" cx="40" cy="182" r="4.2"/>
+        <circle class="m-dot" cx="40" cy="139" r="4.2"/><circle class="m-dot" cx="70" cy="122" r="4.2"/>
+        <circle class="m-dot" cx="70" cy="97" r="4.2"/><circle class="m-dot" cx="104" cy="95" r="4.2"/>
+        <circle class="m-dot" cx="139" cy="99" r="4.2"/><circle class="m-dot" cx="140" cy="135" r="4.2"/>
+        <circle class="m-dot" cx="164" cy="165" r="4.2"/><circle class="m-dot" cx="190" cy="196" r="4.2"/>
+        <circle class="m-dot" cx="168" cy="225" r="4.2"/><circle class="m-dot" cx="112" cy="225" r="4.2"/>
+      </g>
+      <text class="t t-m" x="186" y="60">measured points xᵢ</text>
+      <text class="t t-m" x="186" y="78">(machine frame)</text>
+    </g>
+
+    <!-- arrow -->
+    <line class="g-line" x1="300" y1="160" x2="378" y2="160" marker-end="url(#ah2)"/>
+    <text class="t-i" x="306" y="146">T ∈ SE(3)</text>
+    <text class="t" x="300" y="182">6 unknowns</text>
+
+    <!-- RIGHT -->
+    <g transform="translate(410,0)">
+      <path class="s-line" d="M40,225 L40,135 L70,135 L70,105 Q70,95 80,95 L130,95 Q140,95 140,105 L140,165 L190,165 L190,225 Z"/>
+      <g transform="translate(3,-3)">
+        <circle class="m-dot" cx="40" cy="225" r="4.2"/><circle class="m-dot" cx="40" cy="182" r="4.2"/>
+        <circle class="m-dot" cx="40" cy="139" r="4.2"/><circle class="m-dot" cx="70" cy="122" r="4.2"/>
+        <circle class="m-dot" cx="70" cy="97" r="4.2"/><circle class="m-dot" cx="104" cy="95" r="4.2"/>
+        <circle class="m-dot" cx="139" cy="99" r="4.2"/><circle class="m-dot" cx="140" cy="135" r="4.2"/>
+        <circle class="m-dot" cx="164" cy="165" r="4.2"/><circle class="m-dot" cx="190" cy="196" r="4.2"/>
+        <circle class="m-dot" cx="168" cy="225" r="4.2"/><circle class="m-dot" cx="112" cy="225" r="4.2"/>
+      </g>
+      <text class="t" x="40" y="252">aligned: residuals are the deviations</text>
+      <text class="t" x="40" y="270">we actually want to inspect</text>
+    </g>
+  </svg>
+ </div>
+ <figcaption><b>Fig. 2</b> Alignment is a prerequisite, not the goal. Until the pose is recovered, every deviation between measurement and model is dominated by how the part happened to be sitting.</figcaption>
+</figure>
+
+<section class="col">
+  <p>The pose variable is not the problem. <span class="mono">SE(3)</span> is a smooth six-dimensional group, and the objective is an ordinary quadratic in it. Every obstruction lives in the correspondence variables <span class="mono">y₁,…,y_N</span>, and there are three of them.</p>
+
+  <p><strong>There is nothing to move along.</strong> Since <span class="mono">Y</span> is curved, a step taken from a surface location leaves the surface, and the average of two surface locations is not a surface location. There is no convex combination to form and no descent direction that stays feasible without a projection back onto the surface.</p>
+
+  <p><strong>Coordinates break exactly where measurements land.</strong> Doing calculus in <span class="mono">yᵢ</span> requires a chart, charts exist only per face, and those charts stop at trimming boundaries and degenerate at apices and poles. Measurements near edges and fillets — which is to say a large fraction of them — sit close to these failures.</p>
+
+  <p><strong>The choice of face is discrete.</strong> This is the real obstruction. Which face <span class="mono">yᵢ</span> lies on is a combinatorial variable, and sliding a correspondence from one face to a neighbouring one is not continuous motion within any single chart; it is a jump from one chart to another. With <span class="mono">K</span> faces and <span class="mono">N</span> measurements there are <span class="mono">Kᴺ</span> branches, each containing its own continuous refinement problem.</p>
+</section>
+
+<figure>
+ <div class="fig-scroll">
+  <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A measured point above a concave seam has two equally near footpoints, one on each face, and the assignment branches combinatorially.">
+    <!-- two faces meeting in a groove -->
+    <path class="s-line" d="M120,110 L250,240 L380,110"/>
+    <text class="t t-s" x="112" y="102">face A</text>
+    <text class="t t-s" x="352" y="102">face B</text>
+
+    <!-- medial axis -->
+    <path class="g-dash" d="M250,100 L250,240"/>
+    <text class="t" x="258" y="96">medial axis</text>
+
+    <!-- measured point + two feet -->
+    <circle class="m-dot" cx="250" cy="140" r="5.5"/>
+    <text class="t t-m" x="258" y="136">T(xᵢ)</text>
+    <path class="m-dash" d="M250,140 L200,190"/>
+    <path class="m-dash" d="M250,140 L300,190"/>
+    <circle class="s-dot" cx="200" cy="190" r="4.5"/>
+    <circle class="s-dot" cx="300" cy="190" r="4.5"/>
+    <text class="t t-s" x="160" y="208">y_A</text>
+    <text class="t t-s" x="308" y="208">y_B</text>
+    <text class="t" x="132" y="262">equal distance — no continuous rule</text>
+    <text class="t" x="132" y="280">picks one over the other</text>
+
+    <!-- branching tree -->
+    <g transform="translate(470,86)">
+      <circle class="m-dot" cx="80" cy="0" r="4"/>
+      <path class="faint" d="M80,0 L20,45 M80,0 L80,45 M80,0 L140,45"/>
+      <circle class="s-dot" cx="20" cy="45" r="3.5"/><circle class="s-dot" cx="80" cy="45" r="3.5"/><circle class="s-dot" cx="140" cy="45" r="3.5"/>
+      <path class="faint" d="M20,45 L2,88 M20,45 L20,88 M20,45 L38,88 M80,45 L62,88 M80,45 L80,88 M80,45 L98,88 M140,45 L122,88 M140,45 L140,88 M140,45 L158,88"/>
+      <circle class="s-dot" cx="2" cy="88" r="3"/><circle class="s-dot" cx="20" cy="88" r="3"/><circle class="s-dot" cx="38" cy="88" r="3"/>
+      <circle class="s-dot" cx="62" cy="88" r="3"/><circle class="s-dot" cx="80" cy="88" r="3"/><circle class="s-dot" cx="98" cy="88" r="3"/>
+      <circle class="s-dot" cx="122" cy="88" r="3"/><circle class="s-dot" cx="140" cy="88" r="3"/><circle class="s-dot" cx="158" cy="88" r="3"/>
+      <text class="t" x="0" y="120">Kᴺ assignments of N points</text>
+      <text class="t" x="0" y="138">to K faces</text>
+    </g>
+  </svg>
+ </div>
+ <figcaption><b>Fig. 3</b> Left: near a seam the two candidate footpoints are equally good, and the assignment flips discontinuously as the pose moves. The dashed locus of tie points is the medial axis, which returns in §08 and §09. Right: those flips multiply across measurements.</figcaption>
+</figure>
+
+<section class="col">
+  <p class="carry"><span class="tag">Carry forward</span>The objective in (1) is friendly — a sum of squares. The feasible set <span class="mono">Yᴺ</span> is what makes the problem hard, so the feasible set is what we change.</p>
+</section>
+
+<hr class="rule">
+
+<!-- ============================================ 4 -->
+<section class="col">
+  <h2><span class="num">04 — The relaxation</span>Replacing a location by a distribution of weight</h2>
+
+  <p>Hold the pose <span class="mono">T</span> fixed and look at a single measured point <span class="mono">x</span>. Write <span class="mono">f(y) = ‖T(x) − y‖²</span>, a continuous function on the compact surface <span class="mono">Y</span>: the cost of blaming the location <span class="mono">y</span> for this measurement. Originally we choose one location and pay the cost there.</p>
+
+  <p>Instead, allow a choice of <em class="term">probability measure</em> <span class="mono">π</span> on <span class="mono">Y</span> — an assignment of weight totalling one, spread over the surface however we like — and pay the weighted average <span class="mono">∫ f dπ</span>. Write <span class="mono">P(Y)</span> for the set of all such measures. The claim is that this changes nothing:</p>
+
+  <div class="eq">
+    <div class="body">min<sub>y ∈ Y</sub> f(y) &nbsp;=&nbsp; min<sub>π ∈ P(Y)</sub> ∫<sub>Y</sub> f dπ</div>
+    <div class="tag">(2)</div>
+  </div>
+
+  <p>Both directions are immediate. No weighted average of values can fall below the smallest value, and the weights total one, so <span class="mono">∫ f dπ ≥ min f</span> for every <span class="mono">π</span> — the right side cannot be smaller than the left. In the other direction, the measure that puts all its weight at a minimizing location <span class="mono">y*</span>, written <span class="mono">δ_{y*}</span>, pays exactly <span class="mono">f(y*) = min f</span> — so the right side cannot be larger either. The two are equal.</p>
+
+  <p>Every relaxation is a bet that enlarging the search space does not lower the optimum. Here the bet is settled in advance: identity (2) is exact, not an approximation or a bound.</p>
+
+  <aside>
+    <span class="tag">Aside — why the weights have to be measures</span>
+    <p>Cost is a value <em>at a location</em>, so it is a function on <span class="mono">Y</span>. Weight is an amount <em>over a region</em>, and it cannot be a function on <span class="mono">Y</span>, because on a continuum a single point occupies no area and would carry none.</p>
+    <p>So ask instead what the weight object has to do. It takes a cost landscape and returns a single bill. It does so linearly — double every cost and the bill doubles — and continuously — a small change in costs makes a small change in the bill. That is precisely a bounded linear functional on <span class="mono">C(Y)</span>, the continuous functions on <span class="mono">Y</span>. The <strong>Riesz–Markov theorem</strong> says that on a compact space every such functional is integration against a unique regular Borel measure, and that the correspondence <span class="mono">M(Y) ≅ C(Y)*</span> preserves norms exactly. Being an object of that kind and being a measure are the same thing, so nothing was assumed by writing <span class="mono">∫ f dπ</span>.</p>
+  </aside>
+</section>
+
+<figure>
+ <div class="fig-scroll">
+  <svg viewBox="0 0 700 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A single spike of unit weight at one surface location, versus weight split half and half across two faces at a seam.">
+    <defs>
+      <marker id="ah4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,1 L9,5 L0,9 z" fill="#B93C26"/>
+      </marker>
+    </defs>
+    <!-- unit level guide -->
+    <path class="faint" d="M40,60 L660,60"/>
+    <text class="t" x="12" y="64">1</text>
+    <text class="t" x="12" y="124">½</text>
+    <path class="faint" d="M40,120 L660,120"/>
+
+    <!-- panel a -->
+    <path class="s-line" d="M50,190 C110,178 170,196 250,188"/>
+    <path class="m-line" d="M150,187 L150,62" marker-end="url(#ah4)"/>
+    <circle class="s-dot" cx="150" cy="187" r="4.5"/>
+    <text class="t t-m" x="158" y="80">weight 1</text>
+    <text class="t" x="50" y="222">δ_y — all weight at one location</text>
+
+    <!-- panel b -->
+    <g transform="translate(360,0)">
+      <path class="s-line" d="M20,196 C60,186 110,180 150,168"/>
+      <path class="s-line" d="M150,168 C186,190 230,192 280,186"/>
+      <circle class="s-dot" cx="150" cy="168" r="4.5"/>
+      <text class="t t-s" x="30" y="150">face A</text>
+      <text class="t t-s" x="238" y="160">face B</text>
+      <path class="m-line" d="M90,182 L90,122" marker-end="url(#ah4)"/>
+      <path class="m-line" d="M215,190 L215,122" marker-end="url(#ah4)"/>
+      <text class="t t-m" x="60" y="112">½</text>
+      <text class="t t-m" x="210" y="112">½</text>
+      <text class="t" x="20" y="222">a mixture — weight split across the seam</text>
+    </g>
+  </svg>
+ </div>
+ <figcaption><b>Fig. 4</b> The relaxed correspondence variable. The left state is the original one, now written as a measure. The right state has no counterpart among locations: there is no single point that is half on face A and half on face B, but there is such a measure.</figcaption>
+</figure>
+
+<hr class="rule">
+
+<!-- ============================================ 5 -->
+<section class="col">
+  <h2><span class="num">05 — The relaxed problem</span>What the enlargement buys</h2>
+
+  <p>Applying (2) to every measurement at once gives the relaxed energy. Each correspondence <span class="mono">yᵢ ∈ Y</span> has become a measure <span class="mono">πᵢ ∈ P(Y)</span>:</p>
+
+  <div class="eq">
+    <div class="body">E(T, π₁, …, π_N) &nbsp;=&nbsp; Σᵢ ∫<sub>Y</sub> ‖T(xᵢ) − y‖² dπᵢ(y)
+      <span class="eq-note">minimize over T ∈ SE(3) and π₁,…,π_N ∈ P(Y)</span></div>
+    <div class="tag">(3)</div>
+  </div>
+
+  <p>The search space is far larger — each <span class="mono">πᵢ</span> is infinite-dimensional where <span class="mono">yᵢ</span> was three numbers — and yet every obstruction from §03 is gone.</p>
+
+  <p><strong>There is now something to move along.</strong> <span class="mono">P(Y)</span> is convex: blend two probability measures and the result is a probability measure. Straight lines between feasible points stay feasible, which is exactly what failed for locations on a curved surface.</p>
+
+  <p><strong>The objective is linear in each correspondence variable.</strong> An integral is linear in the measure it integrates against, no matter how badly behaved the cost function is. This holds exactly, not after a change of variables or a local approximation.</p>
+
+  <p><strong>The discrete face choice dissolves.</strong> A measure with half its weight on face A and half on face B is an unremarkable element of <span class="mono">P(Y)</span>, whereas no location was half on each. Moving a correspondence from one face to another is now a continuous slide of weight through legitimate intermediate states. The <span class="mono">Kᴺ</span> branches have become one connected convex set.</p>
+
+  <p><strong>The coordinate degeneracies stop mattering.</strong> A measure does not need a chart. The point mass <span class="mono">δ_q</span> is the same kind of object whether <span class="mono">q</span> lies in the interior of a face, on an edge curve, at a vertex, or at a cone apex, so trimming boundaries and poles no longer require special handling.</p>
+
+  <p><strong>A minimizer exists.</strong> <span class="mono">P(Y)</span> sits inside the unit ball of <span class="mono">M(Y) = C(Y)*</span>, which is compact in the weak-* topology by <strong>Banach–Alaoglu</strong>, and <span class="mono">P(Y)</span> is a closed subset of it, hence itself compact. The pose is not confined to a compact set, but the energy grows without bound as the translation runs off to infinity, so the search can be restricted to a bounded sublevel set at no cost. A continuous function on a compact set attains its minimum, so problem (3) has a solution.</p>
+
+  <p class="carry"><span class="tag">Carry forward</span>Problem (3) has the same optimal value as (1), a convex feasible set in the correspondence variables, an objective linear in them, no face branching, and a guaranteed minimizer.</p>
+</section>
+
+<figure>
+ <div class="fig-scroll">
+  <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A non-convex surface where the chord between two points leaves the set, beside a schematic convex set of measures where the corresponding chord stays inside.">
+    <!-- panel a: Y -->
+    <path class="s-line" d="M60,120 C90,58 180,52 216,96 C246,132 196,150 186,182 C176,214 214,236 178,244 C126,254 66,206 60,120 Z"/>
+    <circle class="s-dot" cx="96" cy="72" r="5"/>
+    <circle class="s-dot" cx="186" cy="216" r="5"/>
+    <path class="g-dash" d="M96,72 L186,216"/>
+    <g>
+      <path class="m-line" d="M134,138 L148,152 M148,138 L134,152"/>
+    </g>
+    <text class="t t-s" x="70" y="60">y₁</text>
+    <text class="t t-s" x="196" y="234">y₂</text>
+    <text class="t t-m" x="156" y="140">midpoint ∉ Y</text>
+    <text class="t" x="60" y="272">Y — locations on the part, not convex</text>
+
+    <!-- panel b: P(Y) -->
+    <g transform="translate(370,0)">
+      <path class="wash-box" d="M40,150 C40,80 120,44 200,52 C270,58 300,110 292,170 C284,228 210,252 140,246 C78,240 40,206 40,150 Z"/>
+      <path class="s-line" d="M40,150 C40,80 120,44 200,52 C270,58 300,110 292,170"/>
+      <circle class="s-dot" cx="62" cy="94" r="5"/>
+      <circle class="s-dot" cx="292" cy="170" r="5"/>
+      <path class="m-line" d="M62,94 L292,170"/>
+      <circle class="m-dot" cx="177" cy="132" r="5"/>
+      <text class="t t-s" x="30" y="82">δ_y₁</text>
+      <text class="t t-s" x="266" y="192">δ_y₂</text>
+      <text class="t t-m" x="112" y="122">½δ_y₁ + ½δ_y₂</text>
+      <text class="t t-s" x="112" y="42">extreme points: the δ_y</text>
+      <text class="t" x="40" y="272">P(Y) — measures on the part, convex</text>
+    </g>
+  </svg>
+ </div>
+ <figcaption><b>Fig. 5</b> Schematic; P(Y) is infinite-dimensional. The original locations survive inside the enlarged set as the point masses, and those turn out to be exactly its extreme points — the fact that makes the relaxation tight in §08.</figcaption>
+</figure>
+
+<hr class="rule">
+
+<!-- ============================================ 6 -->
+<section class="col">
+  <h2><span class="num">06 — Independence</span>The N correspondence problems do not interact</h2>
+
+  <p>Nothing in problem (3) restricts what the model side receives. There is no bound on <span class="mono">Σᵢ πᵢ(A)</span> for a region <span class="mono">A</span> of the surface, so two measurements are free to place all their weight on the same location, and a hundred are free to pile onto one face while another face receives nothing.</p>
+
+  <p>That absence has a structural consequence. The feasible set for the correspondences is a plain product <span class="mono">∏ᵢ P(Y)</span>, in which each coordinate can be chosen without regard to the others. A sum of terms minimized over a product set separates:</p>
+
+  <div class="eq">
+    <div class="body">min<sub>(π₁,…,π_N)</sub> Σᵢ (cost of measurement i) &nbsp;=&nbsp; Σᵢ min<sub>πᵢ</sub> (cost of measurement i)</div>
+    <div class="tag">(4)</div>
+  </div>
+
+  <p>So for a fixed pose, the correspondence problem is not one problem in <span class="mono">N</span> coupled variables but <span class="mono">N</span> separate one-measurement problems, each solved independently and in parallel by a single nearest-point query against the surface.</p>
+
+  <aside>
+    <span class="tag">Aside — what breaks the independence, and why you might want it broken</span>
+    <p>Separability is a property of this particular setting, not a general fact. Impose a limit on what the model may receive — a cap on the weight any region can absorb, or a prescribed distribution over the surface — and the product structure fails. Choosing <span class="mono">πᵢ</span> then constrains the choices left for <span class="mono">πⱼ</span>, the <span class="mono">N</span> problems fuse into a single coupled problem over the joint distribution, and what remains is an <strong>optimal transport</strong> problem: a global assignment rather than <span class="mono">N</span> local queries.</p>
+    <p>The cost is that a cheap parallel step becomes an expensive coupled solve. What is bought is robustness — a constraint on the receiving side is what prevents many measurements from collapsing onto the same convenient patch of the model, which is the standard failure mode when part of the surface was never measured.</p>
+  </aside>
+
+  <p class="carry"><span class="tag">Carry forward</span>With the model side unconstrained, the correspondence step is <span class="mono">N</span> independent nearest-point queries.</p>
+</section>
+
+<hr class="rule">
+
+<!-- ============================================ 7 -->
+<section class="col">
+  <h2><span class="num">07 — Tightness</span>The optimal measures are point masses after all</h2>
+
+  <p>An enlarged search space is only useful if it does not introduce solutions that mean nothing in the original problem. Here it does not, and the reason is a standard fact about linear objectives.</p>
+
+  <p>For a fixed pose, the correspondence problem minimizes a linear functional over a convex compact set, and such a minimum is always attained at an <em class="term">extreme point</em> — a point of the set that is not the average of two others. The extreme points of <span class="mono">P(Y)</span> are exactly the point masses <span class="mono">δ_y</span>: any measure that spreads weight over two or more places is the average of measures that concentrate it differently, and so is not extreme.</p>
+
+  <p>The optimum therefore has the original form. All weight sits at one surface location, which is to say the correspondence is a hard assignment. Enlarging the search space admitted nothing spurious.</p>
+
+  <p>The one exception is worth naming, because it reappears immediately. A spread-out solution can only be optimal when the minimum of <span class="mono">f</span> is attained at more than one location — when there is a tie. Since <span class="mono">f(y) = ‖T(x) − y‖²</span>, a tie means the transformed measurement has two or more equally near points on the surface. The set of positions in space with that property is the <strong>medial axis</strong> of <span class="mono">Y</span>: the locus running down the middle of a groove, along the ridge above a convex edge, and down the centre of a hole. Off the medial axis the nearest point is unique and the optimal measure is a single point mass. On it, any blend of the tied point masses is equally optimal.</p>
+
+  <p class="carry"><span class="tag">Carry forward</span>The relaxation is tight: hard assignment wins, and fractional correspondences appear only for measurements sitting on the medial axis.</p>
+</section>
+
+<hr class="rule">
+
+<!-- ============================================ 8 -->
+<section class="col">
+  <h2><span class="num">08 — Elimination</span>Removing the correspondences to get a landscape in the pose alone</h2>
+
+  <p>Two blocks of variables remain: the pose and the correspondences. We eliminate the correspondences and keep the pose, for two reasons. They are cheap to eliminate, since §06 and §07 reduce that step to one nearest-point query per measurement. And they are uninteresting to report, since a list of <span class="mono">N</span> surface locations does not answer the question the inspection asked, which is where the part is.</p>
+
+  <p>Define the eliminated energy by minimizing (3) over the correspondences at each pose:</p>
+
+  <div class="eq">
+    <div class="body">E(T) &nbsp;=&nbsp; min<sub>π</sub> E(T, π₁, …, π_N)</div>
+    <div class="tag">(5)</div>
+  </div>
+
+  <p>For any fixed choice of correspondences, the function <span class="mono">T ↦ E(T, π)</span> is smooth — a quadratic in the pose parameters, with no combinatorial content left in it. Call each such function a <em class="term">member</em>. Then <span class="mono">E</span> is the pointwise minimum of the whole family of members, which is to say their <strong>lower envelope</strong>.</p>
+
+  <p>Envelopes of smooth functions are generally not smooth. Where two members cross, the envelope has a kink — the minimizing correspondence changes as the pose moves through that point, one measurement handing over from one footpoint to another. By §07 those handovers are exactly the poses at which some measurement lands on the medial axis. The discrete structure was not removed by the relaxation; it was converted into the non-smoothness of a landscape defined on six variables, which is a far more tractable form.</p>
+</section>
+
+<figure>
+ <div class="fig-scroll">
+  <svg viewBox="0 0 700 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Several smooth member curves with their lower envelope drawn in bold, kinks at the crossings, and a descent step from T-zero to T-one along the active member.">
+    <defs>
+      <marker id="ah6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,1 L9,5 L0,9 z" fill="#B93C26"/>
+      </marker>
+      <marker id="ah6g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,1 L9,5 L0,9 z" fill="#59646A"/>
+      </marker>
+    </defs>
+
+    <!-- axes -->
+    <line class="g-line" x1="58" y1="276" x2="672" y2="276" marker-end="url(#ah6g)"/>
+    <line class="g-line" x1="58" y1="276" x2="58" y2="44" marker-end="url(#ah6g)"/>
+    <text class="t" x="612" y="298">pose T</text>
+    <text class="t" x="30" y="42">E</text>
+
+    <!-- faint members -->
+    <path class="faint" d="M70,165.7 Q178.5,285.8 287,80.1"/>
+    <path class="faint" d="M118,80.1 Q270,399.9 422,80.1"/>
+    <path class="faint" d="M258,79.4 Q390,320.6 522,79.4"/>
+    <path class="faint" d="M353,79.4 Q506.5,413 660,94.3"/>
+    <path class="faint" d="M480,79.4 Q570,253.8 660,203.9"/>
+
+    <!-- active member highlighted -->
+    <path class="m-line" d="M118,80.1 Q270,399.9 422,80.1" opacity="0.85"/>
+
+    <!-- envelope -->
+    <g stroke="#1A6B74" stroke-width="3.6" fill="none" stroke-linecap="round">
+      <path d="M70,165.7 Q130.95,233.2 191.9,197.9"/>
+      <path d="M191.9,197.9 Q273,285.5 354.1,191.1"/>
+      <path d="M354.1,191.1 Q387,207.4 419.9,193.8"/>
+      <path d="M419.9,193.8 Q504,298.7 588,207.9"/>
+      <path d="M588,207.9 Q624,223.8 660,203.9"/>
+    </g>
+    <!-- kinks -->
+    <g fill="#F8FAFA" stroke="#1A6B74" stroke-width="2">
+      <circle cx="191.9" cy="197.9" r="4.5"/>
+      <circle cx="354.1" cy="191.1" r="4.5"/>
+      <circle cx="419.9" cy="193.8" r="4.5"/>
+      <circle cx="588" cy="207.9" r="4.5"/>
+    </g>
+
+    <!-- touch point and descent -->
+    <circle class="m-dot" cx="320" cy="222.7" r="5.5"/>
+    <circle class="m-dot" cx="270" cy="240" r="5.5"/>
+    <path class="m-line" d="M312,231 L280,239" marker-end="url(#ah6)"/>
+    <path class="g-dash" d="M320,222.7 L320,276"/>
+    <path class="g-dash" d="M270,240 L270,276"/>
+    <text class="t-b" x="313" y="292">T₀</text>
+    <text class="t-b" x="263" y="292">T₁</text>
+
+    <!-- labels -->
+    <text class="t t-m" x="150" y="70">member E(·, π*) — smooth, fixed correspondences</text>
+    <text class="t t-s" x="92" y="160">envelope E(T)</text>
+    <text class="t" x="424" y="172">kink: a correspondence</text>
+    <text class="t" x="424" y="190">hands over</text>
+    <line class="g-line" x1="420" y1="176" x2="368" y2="188"/>
+    <text class="t" x="58" y="320">Schematic: one dimension of the six shown. Lower is better.</text>
+  </svg>
+ </div>
+ <figcaption><b>Fig. 6</b> Each thin curve is the energy for one fixed set of correspondences. The bold curve is their lower envelope, which is the energy we actually minimize. Its kinks mark poses where a measurement crosses the medial axis and switches footpoints.</figcaption>
+</figure>
+
+<hr class="rule">
+
+<!-- ============================================ 9 -->
+<section class="col">
+  <h2><span class="num">09 — Traversal</span>Descending an envelope by minimizing one member at a time</h2>
+
+  <p>The envelope is non-smooth and is not available in closed form, but it has a structure that makes it easy to descend. Start at a pose <span class="mono">T₀</span> and solve the correspondence problem there, obtaining <span class="mono">π*</span>. The member <span class="mono">E(·, π*)</span> then has two properties. It lies above the envelope everywhere, because the envelope is the minimum over all correspondences. And it touches the envelope at <span class="mono">T₀</span>, because <span class="mono">π*</span> is the minimizing choice there.</p>
+
+  <p>A smooth function that sits above the objective and touches it at the current point is a <em class="term">majorizer</em>, and minimizing a majorizer cannot make the objective worse. Writing <span class="mono">T₁</span> for the minimizer of the member:</p>
+
+  <div class="eq">
+    <div class="body">E(T₁) &nbsp;≤&nbsp; E(T₁, π*) &nbsp;≤&nbsp; E(T₀, π*) &nbsp;=&nbsp; E(T₀)
+      <span class="eq-note">envelope below member · T₁ minimizes the member · member touches at T₀</span></div>
+    <div class="tag">(6)</div>
+  </div>
+
+  <p>Each iteration decreases the energy, with no step size and no line search. This is the majorize–minimize pattern, and it is what makes the method stable.</p>
+
+  <p>The frozen correspondences also give the right derivative rather than an approximation of it. <strong>Danskin's theorem</strong> states that where the minimizing correspondence is unique, the envelope is differentiable and <span class="mono">∇E(T₀) = ∇_T E(T₀, π*)</span>: differentiating the member with the correspondences held fixed produces the exact gradient of the envelope. Where the minimizer is not unique — the handover poses again — the envelope is not differentiable, and the members' gradients span its set of subgradients. That is the kink, seen analytically.</p>
+
+  <p class="carry"><span class="tag">Carry forward</span>Freezing correspondences and refitting the pose is exact descent on the envelope, not a heuristic alternation.</p>
+</section>
+
+<hr class="rule">
+
+<!-- ============================================ 10 -->
+<section class="col">
+  <h2><span class="num">10 — The algorithm</span>What the derivation produces</h2>
+
+  <p>Assembling §06 through §09 gives the loop.</p>
+
+  <pre>T ← initial pose
+
+repeat until converged:
+    π ← argmin<sub>π</sub> E(T, π)   <span class="c"># nearest point on Y for each measurement</span>
+    T ← argmin<sub>T</sub> E(T, π)   <span class="c"># refit the pose to fixed correspondences</span></pre>
+
+  <p>This is the iterative closest point method. The two steps have quite different characters.</p>
+
+  <p>The <strong>correspondence step</strong> is <span class="mono">N</span> independent nearest-point queries against the B-rep, by §06, each returning a single surface location, by §07. It is embarrassingly parallel and dominates the runtime, since each query touches the model's faces rather than a fixed-size system.</p>
+
+  <p>The <strong>pose step</strong> minimizes <span class="mono">Σᵢ ‖T(xᵢ) − yᵢ‖²</span> over the six pose parameters with the footpoints held fixed. This is the orthogonal Procrustes problem, solved in closed form: centre both point sets, form the <span class="mono">3×3</span> cross-covariance matrix, and read the rotation off its singular value decomposition. If the rotation is instead linearized about the current pose — or if the residual is measured along the surface normal rather than to the footpoint, which converges considerably faster on nearly flat regions — the step becomes a <span class="mono">6×6</span> linear system. Either way its cost is fixed and small.</p>
+</section>
+
+<figure>
+ <div class="fig-scroll">
+  <svg viewBox="0 0 700 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A two-step cycle: the correspondence step feeding the pose step and back again.">
+    <defs>
+      <marker id="ah7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,1 L9,5 L0,9 z" fill="#59646A"/>
+      </marker>
+    </defs>
+    <rect x="80" y="60" width="220" height="72" rx="3" fill="#D5E5E6" stroke="#1A6B74" stroke-width="1.6"/>
+    <text class="t-b" x="100" y="90">correspondence step</text>
+    <text class="t" x="100" y="112">N nearest-point queries</text>
+
+    <rect x="400" y="60" width="220" height="72" rx="3" fill="#F2DCD7" stroke="#B93C26" stroke-width="1.6"/>
+    <text class="t-b" x="420" y="90">pose step</text>
+    <text class="t" x="420" y="112">closed-form fit, 6 unknowns</text>
+
+    <path class="g-line" d="M300,80 C340,60 360,60 400,80" marker-end="url(#ah7)"/>
+    <path class="g-line" d="M400,116 C360,136 340,136 300,116" marker-end="url(#ah7)"/>
+    <text class="t" x="322" y="52">footpoints</text>
+    <text class="t" x="336" y="162">pose</text>
+
+    <path class="g-line" d="M20,96 L74,96" marker-end="url(#ah7)"/>
+    <text class="t" x="20" y="86">start</text>
+    <path class="g-line" d="M626,96 L680,96" marker-end="url(#ah7)"/>
+    <text class="t" x="600" y="182">stationary point of E</text>
+  </svg>
+ </div>
+ <figcaption><b>Fig. 7</b> Each pass down decreases the energy by (6). The left box is the expensive one and the parallel one; the right box is a small fixed-size solve.</figcaption>
+</figure>
+
+<hr class="rule">
+
+<!-- ============================================ 11 -->
+<section class="col">
+  <h2><span class="num">11 — Convergence</span>What the loop finds, and what it does not</h2>
+
+  <p>The energy decreases at every iteration and the iterates approach a stationary point of the envelope — in whichever basin the initial pose happened to lie.</p>
+
+  <p>Section 05 established that a global minimizer of the relaxed problem exists. Nothing in the derivation connects that minimizer to what this loop returns, and the reason is structural rather than a defect of implementation. The majorizer built at <span class="mono">T₀</span> is assembled entirely out of local queries: each measurement reports only its own nearest surface location, and knows nothing about the alternative it would have chosen under a substantially different pose. A surrogate built from purely local information can only justify a local step, and a method that only takes local steps can only converge locally.</p>
+
+  <p>That gap is where the remaining design choices live, and they fall into two kinds.</p>
+
+  <p>The first kind searches better without changing the landscape: initialization from features, principal axes, or fiducials to choose the basin deliberately; multiple restarts to sample several basins; outlier rejection to keep a few bad correspondences from steering the pose step.</p>
+
+  <p>The second kind changes the landscape itself, and it acts on the block we chose to eliminate. Section 07 showed that when the correspondence problem is left unshaped, its optimum is always a point mass, and the envelope is therefore as kinked as the geometry makes it. Shaping that inner problem changes this. Add a penalty on how concentrated <span class="mono">πᵢ</span> may be — an entropy term is the usual choice — and the optimal correspondence becomes genuinely spread out, weighting many surface locations at once. Each member then carries information about a whole neighbourhood of the model rather than a single footpoint, the envelope becomes smoother, shallow basins merge into their neighbours, and the descent can cross regions that would otherwise have trapped it. Reducing the penalty toward zero over the course of the run recovers the exact problem and its sharp optimum, which is the standard annealing schedule. Constraining what the model may receive, as in the aside to §06, shapes the landscape in a related way at a higher price.</p>
+
+  <p>Stated compactly: initialization and restarts change where the search starts, and shaping the inner problem changes what the search is moving through. Only the second alters the locality that the elimination introduced.</p>
+</section>
+
+</div>
+</body>
+</html>
