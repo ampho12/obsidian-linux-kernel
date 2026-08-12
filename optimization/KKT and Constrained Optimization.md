@@ -1,4 +1,4 @@
-The idea behind optimization is to use an objective to produce a constraint that further narrows our search space for the optimal point.
+The idea behind optimization is to use an objective to produce a constraint that further narrows our search space for the optimal point. The constraint could be an equality constraint giving one point, or it could be a set constraint (e.g. optimal lies along a line instead of a point).
 # Duality
 
 ## Primal
@@ -28,9 +28,9 @@ $$
 
 > Even without the parenthesis, the infinimum is taken after the supremum.
 
-The idea is that if constraints are not satisfied, that is either $g(x) > 0$ or $h(x) \neq 0$, then we can turn $\lambda \to \pm \infty$ and or $\nu \to \infty$ to make the corresponding constraint (i.e $\lambda h(x)$ or $\nu g(x)$) tend to $\infty$.
+The idea is that if constraints are not satisfied ($x$ is infeasible), that is either $g(x) > 0$ or $h(x) \neq 0$, then we can turn $\lambda \to \pm \infty$ and or $\nu \to \infty$ to make the corresponding constraint (i.e $\lambda h(x)$ or $\nu g(x)$) tend to $\infty$.
 
-This makes the supremum term go to infinity irrespective of $x$, so the outer infinimum must also tend to $\infty$. Thus x must be feasible, in which case,
+This makes the supremum term go to infinity irrespective of $x$, so the outer infinimum must also tend to $\infty$. Thus, if infimum is finite then $x$ must have be feasible.
 
 $h(x) = 0$ and $\lambda$ doesn't matter
 $g(x) \le 0$, and thus $\nu = 0$ for inner supremum.
@@ -59,7 +59,7 @@ $$
 # Geometric Interpretation of Lagrangian, Dual, and Primal
 
 
-Let's consider just inequality constraints. Equality constraints can be distributed into two inequality constraints.
+Let's consider just inequality constraints. Since equality constraints can be distributed into two inequality constraints, this is equivalent to the original problem.
 
 So our problem is 
 $$
