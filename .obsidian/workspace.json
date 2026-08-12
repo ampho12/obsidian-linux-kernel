@@ -89,12 +89,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "optimization/Majorify Minimize (MM).md",
+                "file": "optimization/Cad Matching.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Majorify Minimize (MM)"
+              "title": "Cad Matching"
             }
           }
         ],
@@ -267,7 +267,7 @@
   "lastOpenFiles": [
     "cad-matching-notes.html",
     "optimization/Legendre Transform.md",
-    "optimization/Majorify Minimize (MM).md",
+    "optimization/Cad Matching.md",
     "optimization/KKT and Constrained Optimization.md",
     "machine-learning/correspondence-problem/Correspondence Problem.md",
     "machine-learning/notes/Perspective and Point.md",

@@ -1,5 +1,8 @@
 
 
+Refer to a html file in this folder for a better explanation.
+
+
 # Three Steps
 1. convert problem to joint optimization and ensure minima exists
 2. shape the landscape.
