@@ -1,0 +1,1269 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Optimization by Factor Graphs</title>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+<main>
+<div id="fg-method">
+
+  <!-- ======================================================
+       INTRODUCTION
+  ======================================================= -->
+
+  <section id="intro">
+    <h1>Optimization by Factor Graphs</h1>
+
+    <nav class="contents">
+      <a href="#factor-graph">1. The factor graph</a> ·
+      <a href="#elimination">2. Variable elimination</a> ·
+      <a href="#order">3. Order of elimination</a> ·
+      <a href="#constraints">4. Handling constraints</a> ·
+      <a href="#pricing">5. Pricing a constraint</a> ·
+      <a href="#duality">6. Duality</a> ·
+      <a href="#summary">7. The method in one page</a> ·
+      <a href="#worked-examples">Worked examples</a>
+    </nav>
+
+    <p class="lead">
+      Optimization is the process of choosing one option out of many. Say
+      you are buying a mattress. You lie on a few of them in the shop and
+      each one earns a verdict — this one wrecks your back, that one is too
+      soft, the third is decent. You are scoring options and keeping the
+      best.
+    </p>
+
+    <p>
+      That is all a cost function is. Write <span class="math">x</span> for
+      a mattress and <span class="math">f(x)</span> for how badly you slept
+      on it. Lower is better, so <em>find the best mattress</em> becomes
+      <em>find the x that makes f(x) smallest</em>. We write that as:
+    </p>
+
+    <div class="equation math centered">
+      inf<sub>x</sub> &nbsp; f(x)
+    </div>
+
+    <p>
+      <span class="math">inf</span> is short for <em>infimum</em>. Read the
+      whole thing as “the lowest value of <span class="math">f</span> you
+      can reach by choosing <span class="math">x</span>.” It is used instead
+      of <span class="math">min</span> because
+      <span class="math">min</span> promises that some
+      <span class="math">x</span> actually attains the best value, and
+      sometimes none does: for <span class="math">x &gt; 0</span>, the cost
+      <span class="math">f(x) = x</span> gets arbitrarily close to
+      <span class="math">0</span> without ever reaching it.
+      <span class="math">inf</span> is the greatest lower bound, so it
+      always exists.
+    </p>
+
+    <p>
+      Worth keeping apart: the <strong>value</strong>
+      <span class="math">inf<sub>x</sub> f(x)</span>, and the
+      <strong>argument</strong> <span class="math">argmin<sub>x</sub> f(x)</span>
+      that achieves it. Both will be needed later.
+    </p>
+
+    <p>
+      Sometimes, even though you like a mattress a lot, it is not something
+      you can buy. The bed frame is only so tall, so anything thicker than
+      30 cm is out. You will only buy from the two or three brands you
+      trust. And the frame is exactly 150 cm wide, so the mattress has to be
+      too. These are <strong>constraints</strong>: rules that rule options
+      out before comfort is even considered.
+    </p>
+
+    <ul>
+      <li>
+        <strong>At most</strong> —
+        <span class="math">height ≤ 30 cm</span>, an inequality constraint.
+      </li>
+      <li>
+        <strong>One of these</strong> —
+        <span class="math">brand ∈ {A, B, C}</span>, a set constraint.
+      </li>
+      <li>
+        <strong>Exactly</strong> —
+        <span class="math">width = 150 cm</span>, an equality constraint.
+      </li>
+    </ul>
+
+    <p class="muted">
+      Constraints come back in section 4, once there is machinery worth
+      pointing at them. Set them aside for now.
+    </p>
+
+    <h3>Two variables at once</h3>
+
+    <p>
+      A mattress is one choice. Most real problems are many choices at once.
+      Suppose there are two variables, <span class="math">x</span> and
+      <span class="math">y</span>, and a single cost to minimize over both:
+    </p>
+
+    <div class="equation math centered">
+      F(x,y) = (x − 1)² + (y − 4)²
+    </div>
+
+    <p>
+      Rather than trying values by hand, differentiate and set the
+      derivatives to zero:
+    </p>
+
+    <div class="equation math">
+      ∂F/∂x = 2(x − 1) = 0 &nbsp;⇒&nbsp; x = 1
+      <br>
+      ∂F/∂y = 2(y − 4) = 0 &nbsp;⇒&nbsp; y = 4
+    </div>
+
+    <p>
+      Notice that the two equations came out completely unrelated.
+      <span class="math">x</span> never appears in
+      <span class="math">y</span>'s equation, so each can be solved on its
+      own. This cost is <strong>separable</strong>: two one-variable
+      problems that happen to be written on the same line.
+    </p>
+
+    <p>
+      Now add a single term to it:
+    </p>
+
+    <div class="equation math centered">
+      F(x,y) = (x − 1)² + <span class="accent">(x − y)²</span> + (y − 4)²
+    </div>
+
+    <p>
+      Same strategy, same two derivatives — but they no longer come apart:
+    </p>
+
+    <div class="equation math">
+      ∂F/∂x = 2(x − 1) + 2(x − y) = 0
+      <br>
+      ∂F/∂y = −2(x − y) + 2(y − 4) = 0
+    </div>
+
+    <p>
+      Each equation now mentions the other variable, so neither can be
+      solved alone. They have to be solved together, which gives
+      <span class="math">x = 2</span>, <span class="math">y = 3</span>, and
+      <span class="math">F = 1 + 1 + 1 = 3</span>.
+    </p>
+
+    <p>
+      One extra term changed the character of the problem entirely. Nothing
+      about the size changed — still two variables — but
+      <span class="math">(x − y)²</span> is a place where
+      <span class="math">x</span> and <span class="math">y</span>
+      <strong>interact</strong>, and interaction is what stops you from
+      working on them separately.
+    </p>
+
+    <p>
+      With two variables you can just solve the coupled pair by hand. With
+      fifty you cannot — but you also rarely have to, because real costs
+      couple only a few variables at a time. So the useful question becomes:
+      <em>which variables actually interact, and where?</em> There is a way
+      to picture exactly that. It is called a factor graph.
+    </p>
+  </section>
+
+
+  <!-- ======================================================
+       1. THE FACTOR GRAPH
+  ======================================================= -->
+
+  <section id="factor-graph">
+    <h2>1. The factor graph</h2>
+
+    <p>
+      Look again at the two costs above. Each is a <strong>sum of
+      terms</strong>, and each term looks at only some of the variables.
+      Draw one node per variable, one node per term, and connect them when
+      the term depends on the variable.
+    </p>
+
+    <p>
+      Start with the separable cost,
+      <span class="math">(x − 1)² + (y − 4)²</span>:
+    </p>
+
+    <svg
+      class="diagram"
+      viewBox="0 0 430 110"
+      role="img"
+      aria-label="Separable cost drawn as two disconnected pieces: f_x joined to x, and f_y joined to y"
+    >
+      <line class="edge" x1="62" y1="55" x2="92" y2="55"/>
+      <line class="edge" x1="262" y1="55" x2="292" y2="55"/>
+
+      <rect class="factor" x="10" y="31" width="52" height="48" rx="10"/>
+      <circle class="node" cx="116" cy="55" r="24"/>
+      <rect class="factor" x="210" y="31" width="52" height="48" rx="10"/>
+      <circle class="node" cx="316" cy="55" r="24"/>
+
+      <text x="36" y="61" text-anchor="middle" fill="currentColor" font-size="15">fₓ</text>
+      <text x="116" y="61" text-anchor="middle" fill="currentColor" font-size="16">x</text>
+      <text x="236" y="61" text-anchor="middle" fill="currentColor" font-size="15">fᵧ</text>
+      <text x="316" y="61" text-anchor="middle" fill="currentColor" font-size="16">y</text>
+    </svg>
+
+    <p>
+      The graph falls into two pieces — which is exactly what the
+      derivatives told us. Now the coupled cost,
+      <span class="math">(x − 1)² + (x − y)² + (y − 4)²</span>:
+    </p>
+
+    <svg
+      class="diagram"
+      viewBox="0 0 430 110"
+      role="img"
+      aria-label="Coupled cost drawn as a connected chain: f_x, x, f_xy, y, f_y"
+    >
+      <line class="edge" x1="62" y1="55" x2="92" y2="55"/>
+      <line class="edge" x1="140" y1="55" x2="170" y2="55"/>
+      <line class="edge" x1="230" y1="55" x2="260" y2="55"/>
+      <line class="edge" x1="308" y1="55" x2="338" y2="55"/>
+
+      <rect class="factor" x="10" y="31" width="52" height="48" rx="10"/>
+      <circle class="node" cx="116" cy="55" r="24"/>
+      <rect class="factor" x="170" y="31" width="60" height="48" rx="10"/>
+      <circle class="node" cx="284" cy="55" r="24"/>
+      <rect class="factor" x="338" y="31" width="52" height="48" rx="10"/>
+
+      <text x="36" y="61" text-anchor="middle" fill="currentColor" font-size="15">fₓ</text>
+      <text x="116" y="61" text-anchor="middle" fill="currentColor" font-size="16">x</text>
+      <text x="200" y="61" text-anchor="middle" fill="currentColor" font-size="15">fₓᵧ</text>
+      <text x="284" y="61" text-anchor="middle" fill="currentColor" font-size="16">y</text>
+      <text x="364" y="61" text-anchor="middle" fill="currentColor" font-size="15">fᵧ</text>
+    </svg>
+
+    <p>
+      One connected chain. The middle box is the interaction, drawn as the
+      thing that joins them. The whole notation is three pieces:
+    </p>
+
+    <ul>
+      <li>
+        <strong>Circles are variables</strong> — the things you get to
+        choose.
+      </li>
+      <li>
+        <strong>Rounded boxes are factors</strong> — the individual terms of
+        the sum. Each is just a small function.
+      </li>
+      <li>
+        <strong>An edge means one thing only:</strong> “this factor depends
+        on this variable.” No formulas, no numbers, no direction.
+      </li>
+    </ul>
+
+    <p>
+      In general the cost is a sum of factors, each looking at a handful of
+      variables:
+    </p>
+
+    <div class="equation math centered">
+      F(x₁, …, xₙ)
+      =
+      Σ<sub>α</sub> f<sub>α</sub>(x<sub>α</sub>)
+    </div>
+
+    <p>
+      <span class="math">α</span> indexes the terms, and
+      <span class="math">x<sub>α</sub></span> means “the few variables that
+      term <span class="math">α</span> actually looks at.”
+    </p>
+
+    <h3>The running example</h3>
+
+    <p>
+      Take the coupled cost from the introduction and insert one more
+      variable in the middle, so <span class="math">y</span> no longer
+      reaches the anchor at 4 directly:
+    </p>
+
+    <div class="equation math centered">
+      F(x,y,z)
+      =
+      (x − 1)²
+      +
+      (x − y)²
+      +
+      (y − z)²
+      +
+      (z − 4)²
+    </div>
+
+    <p>
+      Read left to right: <em>x should be near 1</em>, <em>x and y should be
+      near each other</em>, <em>y and z should be near each other</em>,
+      <em>z should be near 4</em>. A tug-of-war along a chain, and it draws
+      as one:
+    </p>
+
+    <svg
+      class="diagram"
+      viewBox="0 0 620 140"
+      role="img"
+      aria-label="Factor graph of the three-variable chain: f_x, x, f_xy, y, f_yz, z, f_z"
+    >
+      <line class="edge" x1="66" y1="70" x2="98" y2="70"/>
+      <line class="edge" x1="146" y1="70" x2="178" y2="70"/>
+      <line class="edge" x1="242" y1="70" x2="274" y2="70"/>
+      <line class="edge" x1="322" y1="70" x2="354" y2="70"/>
+      <line class="edge" x1="418" y1="70" x2="450" y2="70"/>
+      <line class="edge" x1="498" y1="70" x2="530" y2="70"/>
+
+      <rect class="factor" x="10" y="45" width="56" height="50" rx="10"/>
+      <circle class="node" cx="122" cy="70" r="24"/>
+      <rect class="factor" x="178" y="45" width="64" height="50" rx="10"/>
+      <circle class="node" cx="298" cy="70" r="24"/>
+      <rect class="factor" x="354" y="45" width="64" height="50" rx="10"/>
+      <circle class="node" cx="474" cy="70" r="24"/>
+      <rect class="factor" x="530" y="45" width="56" height="50" rx="10"/>
+
+      <text x="38" y="76" text-anchor="middle" fill="currentColor" font-size="15">fₓ</text>
+      <text x="122" y="76" text-anchor="middle" fill="currentColor" font-size="16">x</text>
+      <text x="210" y="76" text-anchor="middle" fill="currentColor" font-size="15">fₓᵧ</text>
+      <text x="298" y="76" text-anchor="middle" fill="currentColor" font-size="16">y</text>
+      <text x="386" y="76" text-anchor="middle" fill="currentColor" font-size="15">fᵧ𝓏</text>
+      <text x="474" y="76" text-anchor="middle" fill="currentColor" font-size="16">z</text>
+      <text x="558" y="76" text-anchor="middle" fill="currentColor" font-size="15">f𝓏</text>
+    </svg>
+
+    <p class="muted">
+      The shape matters more than the formulas: it is a chain, and
+      <strong>no factor touches both x and z</strong>. That absence is what
+      the next section exploits.
+    </p>
+  </section>
+
+
+  <!-- ======================================================
+       2. VARIABLE ELIMINATION
+  ======================================================= -->
+
+  <section id="elimination">
+    <h2>2. Variable elimination</h2>
+
+    <p>
+      In the introduction we solved the coupled problem by writing down
+      every derivative and setting all of them to zero at once. That works,
+      but it treats every variable as equally entangled with every other:
+      one big simultaneous system, all <span class="math">n</span> equations
+      solved together. The graph says the entanglement is not uniform. Most
+      variables touch only a few factors, and everything else in the cost is
+      irrelevant to them.
+    </p>
+
+    <p>
+      <strong>Variable elimination</strong> exploits exactly that. Rather
+      than solving for all variables simultaneously, remove them one at a
+      time, and when removing one, look only at the factors it touches. The
+      licence to do this is:
+    </p>
+
+    <div class="equation math centered">
+      inf<sub>x,y</sub> F(x,y)
+      &nbsp;=&nbsp;
+      inf<sub>x</sub>
+      [
+      &nbsp; inf<sub>y</sub> F(x,y) &nbsp;
+      ]
+    </div>
+
+    <p>
+      Minimizing jointly is the same as minimizing over
+      <span class="math">y</span> first
+      <em>while pretending x is a fixed constant</em>, and then minimizing
+      what is left over <span class="math">x</span>. The inner step still
+      depends on <span class="math">x</span>, so it leaves behind a
+      <em>function</em> of <span class="math">x</span> rather than a number.
+    </p>
+
+    <div class="viz-callout math">
+      <strong>The recipe.</strong>
+      To eliminate a variable, collect every factor attached to it,
+      apply <span class="math">inf</span> over that variable,
+      and keep its neighbours symbolic.
+      The result is one new factor on those neighbours.
+    </div>
+
+    <p>
+      The graph earns its keep in the first three words: <em>every factor
+      attached to it</em>. Factors that do not touch the variable are
+      constants for this step and get carried along untouched.
+    </p>
+
+    <h3>Eliminating one variable</h3>
+
+    <p>
+      Eliminate <span class="math">y</span> from the chain. Attached
+      factors: <span class="math">f<sub>xy</sub></span> and
+      <span class="math">f<sub>yz</sub></span> — two of the four. Surviving
+      neighbours, called the <strong>boundary</strong>:
+      <span class="math">{x, z}</span>.
+    </p>
+
+    <div class="equation math centered">
+      m₁(x,z)
+      =
+      inf<sub>y</sub>
+      [
+      &nbsp;(x − y)² + (y − z)²&nbsp;
+      ]
+    </div>
+
+    <p>
+      This is the same differentiation as before, but on two terms instead
+      of four. Setting the derivative in <span class="math">y</span> to zero
+      gives <span class="math">y = (x + z)/2</span> — split the difference —
+      and substituting back gives a closed form:
+    </p>
+
+    <div class="equation math centered">
+      m₁(x,z) = ½ (x − z)²
+    </div>
+
+    <p>
+      <span class="math">y</span> and its two factors are gone. One new
+      factor <span class="math">m₁</span> sits in their place, joining
+      <span class="math">x</span> directly to <span class="math">z</span>:
+    </p>
+
+    <svg
+      class="diagram"
+      viewBox="0 0 620 200"
+      role="img"
+      aria-label="Eliminating y produces a new factor m-one joining x and z"
+    >
+      <text x="12" y="24" fill="currentColor" font-size="14">Before</text>
+
+      <circle class="node" cx="95" cy="70" r="24"/>
+      <rect class="factor" x="170" y="45" width="58" height="50" rx="10"/>
+      <circle class="node" cx="305" cy="70" r="24"/>
+      <rect class="factor" x="382" y="45" width="58" height="50" rx="10"/>
+      <circle class="node" cx="515" cy="70" r="24"/>
+
+      <line class="edge" x1="119" y1="70" x2="170" y2="70"/>
+      <line class="edge" x1="228" y1="70" x2="281" y2="70"/>
+      <line class="edge" x1="329" y1="70" x2="382" y2="70"/>
+      <line class="edge" x1="440" y1="70" x2="491" y2="70"/>
+
+      <text x="95" y="76" text-anchor="middle" fill="currentColor">x</text>
+      <text x="199" y="76" text-anchor="middle" fill="currentColor">fₓᵧ</text>
+      <text x="305" y="76" text-anchor="middle" fill="currentColor">y</text>
+      <text x="411" y="76" text-anchor="middle" fill="currentColor">fᵧ𝓏</text>
+      <text x="515" y="76" text-anchor="middle" fill="currentColor">z</text>
+
+      <text x="12" y="144" fill="currentColor" font-size="14">After</text>
+
+      <circle class="node" cx="190" cy="150" r="24"/>
+      <rect class="factor" x="281" y="125" width="58" height="50" rx="10"/>
+      <circle class="node" cx="430" cy="150" r="24"/>
+
+      <line class="edge" x1="214" y1="150" x2="281" y2="150"/>
+      <line class="edge" x1="339" y1="150" x2="406" y2="150"/>
+
+      <text x="190" y="156" text-anchor="middle" fill="currentColor">x</text>
+      <text x="310" y="156" text-anchor="middle" fill="currentColor">m₁</text>
+      <text x="430" y="156" text-anchor="middle" fill="currentColor">z</text>
+    </svg>
+
+    <p>
+      The problem is smaller and <strong>exactly equivalent</strong> —
+      nothing was approximated. Note what the new factor is <em>not</em>: it
+      is none of the original terms, and it did not exist before.
+      Elimination <strong>creates</strong> a factor on the boundary. That is
+      the whole mechanism, and everything remaining on this page is this
+      step with different fillings.
+    </p>
+
+    <h3>Repeating until nothing is left</h3>
+
+    <p>
+      Each pass removes one variable and leaves a strictly smaller problem
+      of the same kind, so just do it again. Peel the chain:
+      <span class="math">y</span>, then <span class="math">z</span>, then
+      <span class="math">x</span>.
+    </p>
+
+    <div class="equation math">
+      <div class="muted">start</div>
+      inf<sub>x,y,z</sub>
+      [ f<sub>x</sub> + f<sub>xy</sub> + f<sub>yz</sub> + f<sub>z</sub> ]
+    </div>
+
+    <div class="equation math">
+      <div class="muted">eliminate y — factors f<sub>xy</sub> and f<sub>yz</sub></div>
+      m₁(x,z) = ½ (x − z)²
+    </div>
+
+    <div class="equation math">
+      <div class="muted">eliminate z — factors m₁ and f<sub>z</sub></div>
+      m₂(x) = inf<sub>z</sub> [ ½(x − z)² + (z − 4)² ] = ⅓ (x − 4)²
+    </div>
+
+    <div class="equation math">
+      <div class="muted">eliminate x — factors f<sub>x</sub> and m₂</div>
+      F* = inf<sub>x</sub> [ (x − 1)² + ⅓(x − 4)² ] = 9/4 = 2.25
+    </div>
+
+    <p>
+      That is the <em>value</em>. The <em>argument</em> comes from unwinding
+      in reverse, using the minimizer recorded at each step:
+    </p>
+
+    <div class="equation math">
+      x* = 7/4
+      <br>
+      z* = (x* + 8)/3 = 13/4
+      <br>
+      y* = (x* + z*)/2 = 5/2
+    </div>
+
+    <p>
+      Check by direct substitution — all four terms land equal, so the
+      tug-of-war settles into a perfect compromise:
+    </p>
+
+    <div class="equation math">
+      (7/4 − 1)² = 9/16
+      <br>
+      (7/4 − 5/2)² = 9/16
+      <br>
+      (5/2 − 13/4)² = 9/16
+      <br>
+      (13/4 − 4)² = 9/16
+      <br>
+      <span class="accent">total = 36/16 = 9/4 ✓</span>
+    </div>
+
+    <p class="muted">
+      Never at any point were three variables handled at once. Compare the
+      alternatives on a chain of <span class="math">n</span> variables with
+      <span class="math">K</span> candidate values each: checking every
+      combination costs <span class="math">Kⁿ</span>, while elimination
+      costs <span class="math">n</span> passes of
+      <span class="math">K²</span>. Ten variables at a hundred values each
+      is the difference between <span class="math">10²⁰</span> and
+      <span class="math">10⁵</span>.
+    </p>
+  </section>
+
+
+  <!-- ======================================================
+       3. ORDER OF ELIMINATION
+  ======================================================= -->
+
+  <section id="order">
+    <h2>3. Order of elimination</h2>
+
+    <p>
+      We eliminated <span class="math">y</span>, then
+      <span class="math">z</span>, then <span class="math">x</span> — but
+      nothing forced that. Six orders were available. Does the choice
+      matter?
+    </p>
+
+    <div class="equation math centered">
+      inf<sub>x</sub> inf<sub>y</sub> F
+      =
+      inf<sub>y</sub> inf<sub>x</sub> F
+      =
+      inf<sub>x,y</sub> F
+    </div>
+
+    <p>
+      When every variable is minimized, <strong>not for the answer</strong>.
+      Two <span class="math">inf</span>s commute, so any order returns the
+      same minimum. It matters for <strong>cost</strong>: eliminating a
+      variable with many neighbours creates a new factor over all of them,
+      which can be far larger than anything in the original problem.
+      Choosing an order that keeps boundaries small is the entire practical
+      art.
+    </p>
+
+    <h3>When not every variable is minimized</h3>
+
+    <p>
+      So far every variable was yours to minimize. Often some are not: an
+      adversary chooses them, or nature does, or they are prices set against
+      you. Those variables are <strong>maximized</strong>, written
+      <span class="math">sup</span> — the mirror image of
+      <span class="math">inf</span>.
+    </p>
+
+    <p>
+      Two <span class="math">sup</span>s commute for the same reason two
+      <span class="math">inf</span>s do, so nothing changes yet. What breaks
+      is mixing them. Once both appear, a factor graph alone can no longer
+      state the problem: each variable must also carry an
+      <strong>operator</strong>, and those operators must be written in a
+      definite order.
+    </p>
+
+    <div class="equation math centered">
+      O<sub>1</sub><sup>x₁</sup>
+      O<sub>2</sub><sup>x₂</sup>
+      …
+      O<sub>n</sub><sup>xₙ</sup>
+      &nbsp;
+      [ &nbsp; Σ<sub>α</sub> f<sub>α</sub>(x<sub>α</sub>) &nbsp; ],
+      &nbsp;&nbsp;
+      O<sub>i</sub> ∈ { inf, sup }
+    </div>
+
+    <p>
+      Unpacked, that is only: a cost written as a sum of factors, plus a
+      list saying who optimizes what, in what order. The clearest way to see
+      what the order does is to write it as nested loops — outermost
+      operator, outermost loop:
+    </p>
+
+    <pre class="code">inf<sub>x</sub> sup<sub>z</sub> F
+
+  best = +infinity
+  for x in X:                    <span class="cm"># outer</span>
+      inner = -infinity
+      for z in Z:                <span class="cm"># runs once per x</span>
+          inner = max(inner, F(x, z))
+      best = min(best, inner)    <span class="cm"># x selects only now</span>
+  return best</pre>
+
+    <p>
+      Two things fall out of this. The inner loop runs once for every
+      setting of <span class="math">x</span>, so every
+      <span class="math">z</span> is evaluated against a
+      <em>fixed, already-known</em> <span class="math">x</span> — that is
+      what it means for z to reply to x. And
+      <span class="math">x</span>'s own selection is the last line of the
+      loop body, after the inner loop has finished: <strong>x is enumerated
+      first but chooses last.</strong> Being outermost does not mean
+      deciding early. It means having to decide with a single value that
+      cannot depend on <span class="math">z</span>, while
+      <span class="math">z</span> gets a different reply for every
+      <span class="math">x</span>.
+    </p>
+
+    <p>
+      Flip the nesting and the roles swap exactly:
+    </p>
+
+    <pre class="code">sup<sub>z</sub> inf<sub>x</sub> F
+
+  best = -infinity
+  for z in Z:                    <span class="cm"># outer</span>
+      inner = +infinity
+      for x in X:                <span class="cm"># runs once per z</span>
+          inner = min(inner, F(x, z))
+      best = max(best, inner)
+  return best</pre>
+
+    <p>
+      A longer prefix such as
+      <span class="math">inf<sub>x</sub> sup<sub>z</sub> inf<sub>y</sub> F</span>
+      nests three deep in the same way. Evaluation always finishes the
+      innermost loop first — which is why elimination proceeds inside out:
+      <span class="math">y</span>, then <span class="math">z</span>, then
+      <span class="math">x</span>.
+    </p>
+
+    <h3>Why mixing them breaks the freedom</h3>
+
+    <p>
+      Let <span class="math">x, z ∈ {0, 1}</span> and let
+      <span class="math">F(x,z) = 1</span> if
+      <span class="math">x = z</span>, otherwise <span class="math">0</span>.
+      x wants it small; z wants it large.
+    </p>
+
+    <table class="payoff math">
+      <tr>
+        <th>F</th>
+        <th>z = 0</th>
+        <th>z = 1</th>
+      </tr>
+      <tr>
+        <th>x = 0</th>
+        <td>1</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <th>x = 1</th>
+        <td>0</td>
+        <td>1</td>
+      </tr>
+    </table>
+
+    <p>
+      Run the first loop on it. For <span class="math">x = 0</span> the
+      inner max over z is <span class="math">max(1, 0) = 1</span>; for
+      <span class="math">x = 1</span> it is
+      <span class="math">max(0, 1) = 1</span>; the outer min over those is
+      <span class="math">1</span>. Whichever x is fixed, z has a reply that
+      matches it.
+    </p>
+
+    <p>
+      Now run the second. For <span class="math">z = 0</span> the inner min
+      over x is <span class="math">min(1, 0) = 0</span>; for
+      <span class="math">z = 1</span> it is
+      <span class="math">min(0, 1) = 0</span>; the outer max is
+      <span class="math">0</span>. Whichever z is fixed, x has a reply that
+      dodges it.
+    </p>
+
+    <div class="equation math centered">
+      sup<sub>z</sub> inf<sub>x</sub> F = 0
+      &nbsp;&nbsp;≠&nbsp;&nbsp;
+      inf<sub>x</sub> sup<sub>z</sub> F = 1
+    </div>
+
+    <p>
+      Same table, same two operators, same four numbers visited — only the
+      nesting changed, and the answer changed with it.
+    </p>
+
+    <p>So the four cases are:</p>
+
+    <ul>
+      <li>
+        <strong><span class="math">inf inf</span></strong> — commutes. Order
+        is free; choose it for cost alone.
+      </li>
+      <li>
+        <strong><span class="math">sup sup</span></strong> — commutes, by
+        the same argument.
+      </li>
+      <li>
+        <strong><span class="math">inf sup</span></strong> — the minimizer
+        commits first, the maximizer replies. This is the larger of the two
+        mixed values.
+      </li>
+      <li>
+        <strong><span class="math">sup inf</span></strong> — the maximizer
+        commits first, the minimizer replies. This is the smaller.
+      </li>
+    </ul>
+
+    <div class="viz-callout space-y">
+      <div class="math">
+        sup<sub>z</sub> inf<sub>x</sub> F
+        &nbsp;≤&nbsp;
+        inf<sub>x</sub> sup<sub>z</sub> F
+      </div>
+
+      <p>
+        Always true, in that direction: committing first can never help you.
+        So swapping unlike operators is <strong>not</strong> the harmless
+        bookkeeping of two <span class="math">inf</span>s — it changes the
+        problem, and generally only gives a bound.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ======================================================
+       4. HANDLING CONSTRAINTS
+  ======================================================= -->
+
+  <section id="constraints">
+    <h2>4. Handling constraints</h2>
+
+    <p>
+      Back to the bed frame. The mattress had to be under 30 cm, from a
+      short list of brands, exactly 150 cm wide — rules sitting alongside
+      the question of comfort, and seemingly a different kind of object from
+      it. They need not be. Allow a factor to take the value
+      <span class="math">+∞</span>, and a hard rule becomes an ordinary
+      factor:
+    </p>
+
+    <div class="equation math centered">
+      I<sub>h</sub>(x)
+      =
+      0 &nbsp;if h(x) = 0,
+      &nbsp;&nbsp;&nbsp;
+      +∞ otherwise.
+    </div>
+
+    <p>
+      Any <span class="math">x</span> that breaks the rule now costs
+      <span class="math">+∞</span>, so the minimization will never pick it.
+      That turns a constrained problem into a plain sum:
+    </p>
+
+    <div class="equation math centered">
+      inf<sub>x</sub> f(x)
+      &nbsp;subject to h(x) = 0
+      &nbsp;&nbsp;=&nbsp;&nbsp;
+      inf<sub>x</sub>
+      [ &nbsp; f(x) + I<sub>h</sub>(x) &nbsp; ]
+    </div>
+
+    <p>
+      Both sides have the same answer, but the right-hand side is a plain
+      factor graph, with the constraint drawn as just another box:
+    </p>
+
+    <svg
+      class="diagram"
+      viewBox="0 0 620 140"
+      role="img"
+      aria-label="Objective factor f and constraint factor I_h both attached to variable x"
+    >
+      <rect class="factor" x="65" y="45" width="80" height="50" rx="10"/>
+      <circle class="node" cx="310" cy="70" r="28"/>
+      <rect class="factor" x="475" y="45" width="80" height="50" rx="10"/>
+
+      <line class="edge" x1="145" y1="70" x2="282" y2="70"/>
+      <line class="edge" x1="338" y1="70" x2="475" y2="70"/>
+
+      <text x="105" y="76" text-anchor="middle" fill="currentColor">f</text>
+      <text x="310" y="76" text-anchor="middle" fill="currentColor">x</text>
+      <text x="515" y="76" text-anchor="middle" fill="currentColor">Iₕ</text>
+    </svg>
+
+    <p class="muted">
+      The same trick covers all three flavours from the introduction: an
+      inequality charges <span class="math">+∞</span> as soon as it is
+      violated, a set constraint charges <span class="math">+∞</span>
+      outside the set. Objective and
+      constraints now live in the same graph and obey the same elimination
+      recipe.
+    </p>
+
+    <h3>What if the variable is being maximized?</h3>
+
+    <p>
+      Nothing about <span class="math">+∞</span> is special — what matters
+      is that it is <em>unreachably bad for a minimizer</em>. Hand the same
+      factor to a <span class="math">sup</span> and it inverts: a maximizer
+      would hunt down the infeasible points precisely because they score
+      <span class="math">+∞</span>. The barrier has to be whatever the
+      operator that owns the variable is trying to avoid, so for
+      <span class="math">sup</span> it points the other way:
+    </p>
+
+    <div class="equation math centered">
+      −I<sub>h</sub>(x)
+      =
+      0 &nbsp;if h(x) = 0,
+      &nbsp;&nbsp;&nbsp;
+      −∞ otherwise.
+    </div>
+
+    <div class="equation math centered">
+      sup<sub>x</sub> f(x)
+      &nbsp;subject to h(x) = 0
+      &nbsp;&nbsp;=&nbsp;&nbsp;
+      sup<sub>x</sub>
+      [ &nbsp; f(x) − I<sub>h</sub>(x) &nbsp; ]
+    </div>
+
+    <p>
+      Same factor, same graph, opposite sign. Stated once for both cases:
+      <strong>a constraint factor takes the value its variable's operator is
+      trying to avoid</strong> — <span class="math">+∞</span> against
+      <span class="math">inf</span>, <span class="math">−∞</span> against
+      <span class="math">sup</span>.
+    </p>
+
+    <p class="muted">
+      One caution once a graph holds both operators. A sum containing both
+      <span class="math">+∞</span> and <span class="math">−∞</span> has no
+      defined value, so a single barrier factor cannot serve two variables
+      with opposite operators. When a constraint genuinely couples an
+      <span class="math">inf</span> variable to a
+      <span class="math">sup</span> one, choosing which side it restricts is
+      a modelling decision, not a change of notation — and the result is no
+      longer a plain minimax.
+    </p>
+  </section>
+
+
+  <!-- ======================================================
+       5. PRICING A CONSTRAINT
+  ======================================================= -->
+
+  <section id="pricing">
+    <h2>5. Pricing a constraint</h2>
+
+    <p>
+      An <span class="math">+∞</span> factor is awkward to compute with.
+      There is an exact rewrite that removes the infinity, and it uses the
+      <span class="math">sup</span> from the previous section:
+    </p>
+
+    <div class="equation math centered">
+      I<sub>h</sub>(x)
+      =
+      sup<sub>λ</sub>
+      &nbsp; λᵀ h(x)
+    </div>
+
+    <p>
+      Why is this exactly the indicator? Fix
+      <span class="math">x</span>; then <span class="math">h(x)</span> is
+      simply some vector. If it is zero, every choice of
+      <span class="math">λ</span> gives <span class="math">0</span>, so the
+      sup is <span class="math">0</span>. If it is nonzero, scale
+      <span class="math">λ</span> along it and the value grows without
+      bound — the sup is <span class="math">+∞</span>. So the hard wall is
+      reproduced by a new variable that <em>charges</em> for violations,
+      with unbounded prices available. <span class="math">λ</span> is the
+      price, or multiplier.
+    </p>
+
+    <p>
+      What sat inside that <span class="math">sup</span> is a function of
+      <em>both</em> variables, so give it a name and treat it as one more
+      factor in the graph:
+    </p>
+
+    <div class="equation math centered">
+      g(x, λ)
+      =
+      λᵀ h(x)
+    </div>
+
+    <p>
+      <span class="math">g</span> is the only new object here. It touches
+      <span class="math">x</span> and <span class="math">λ</span>, it is
+      finite everywhere, and it is what replaces the wall. Substituting it
+      in turns the constrained problem into an operator-annotated factor
+      expression:
+    </p>
+
+    <div class="equation math centered">
+      p*
+      =
+      inf<sub>x</sub>
+      sup<sub>λ</sub>
+      [ &nbsp; f(x) + g(x, λ) &nbsp; ]
+    </div>
+
+    <p>
+      The bracket is the <strong>Lagrangian</strong>
+      <span class="math">L(x, λ)</span>. Note the order:
+      <span class="math">inf<sub>x</sub> sup<sub>λ</sub></span>, inherited
+      directly from the rewrite above. Getting it backwards is a different
+      problem, as the four cases warned.
+    </p>
+
+    <p>
+      The maximization case mirrors it, exactly as the
+      <span class="math">−∞</span> barrier did. To hold
+      <span class="math">−I<sub>h</sub></span> we need a price that drives
+      the value <em>down</em> on violation, so the price variable carries
+      <span class="math">inf</span>:
+    </p>
+
+    <div class="equation math centered">
+      −I<sub>h</sub>(x)
+      =
+      inf<sub>λ</sub>
+      &nbsp; g(x, λ)
+      &nbsp;&nbsp;&nbsp;⇒&nbsp;&nbsp;&nbsp;
+      sup<sub>x</sub> inf<sub>λ</sub> L(x, λ)
+    </div>
+
+    <p>
+      Feasible <span class="math">x</span> still gives
+      <span class="math">0</span> for every <span class="math">λ</span>;
+      infeasible <span class="math">x</span> lets
+      <span class="math">λ</span> scale <em>against</em> the violation and
+      drive the term to <span class="math">−∞</span>. So the rule is:
+      <strong>the price always carries the opposite operator to the variable
+      it constrains.</strong>
+    </p>
+
+    <p class="muted">
+      Which is worth pausing on. Pricing a constraint <em>never</em> yields
+      a same-operator prefix — it manufactures an
+      <span class="math">inf sup</span> or a
+      <span class="math">sup inf</span> every time. Constrained optimization
+      is mixed-operator optimization.
+    </p>
+
+    <p>
+      On the graph, the wall became a <em>node</em>: a real variable,
+      carrying <span class="math">sup</span>, joined to
+      <span class="math">x</span> by a finite factor.
+    </p>
+
+    <svg
+      class="diagram"
+      viewBox="0 0 620 230"
+      role="img"
+      aria-label="Before pricing, an infinite-valued indicator factor sits on x; after pricing, it becomes a coupling factor joining x to a new variable lambda"
+    >
+      <text x="12" y="20" fill="currentColor" font-size="14">Before pricing</text>
+
+      <rect class="factor" x="55" y="42" width="70" height="50" rx="10"/>
+      <circle class="node" cx="270" cy="67" r="27"/>
+      <rect class="factor" x="430" y="42" width="80" height="50" rx="10"/>
+
+      <line class="edge" x1="125" y1="67" x2="243" y2="67"/>
+      <line class="edge" x1="297" y1="67" x2="430" y2="67"/>
+
+      <text x="90" y="73" text-anchor="middle" fill="currentColor">f</text>
+      <text x="270" y="73" text-anchor="middle" fill="currentColor">x</text>
+      <text x="470" y="73" text-anchor="middle" fill="currentColor">Iₕ</text>
+
+      <text x="12" y="145" fill="currentColor" font-size="14">After introducing λ</text>
+
+      <rect class="factor" x="55" y="167" width="70" height="50" rx="10"/>
+      <circle class="node" cx="230" cy="192" r="27"/>
+      <rect class="factor" x="310" y="167" width="70" height="50" rx="10"/>
+      <circle class="node" cx="475" cy="192" r="27"/>
+
+      <line class="edge" x1="125" y1="192" x2="203" y2="192"/>
+      <line class="edge" x1="257" y1="192" x2="310" y2="192"/>
+      <line class="edge" x1="380" y1="192" x2="448" y2="192"/>
+
+      <text x="90" y="198" text-anchor="middle" fill="currentColor">f</text>
+      <text x="230" y="198" text-anchor="middle" fill="currentColor">x</text>
+      <text x="345" y="198" text-anchor="middle" fill="currentColor">g</text>
+      <text x="475" y="198" text-anchor="middle" fill="currentColor">λ</text>
+    </svg>
+  </section>
+
+
+  <!-- ======================================================
+       6. DUALITY
+  ======================================================= -->
+
+  <section id="duality">
+    <h2>6. Duality</h2>
+
+    <p>
+      What is left is an ordinary two-variable factor graph, and we already
+      know what to do with one of those: eliminate a variable. Keep
+      <span class="math">λ</span> symbolic and eliminate
+      <span class="math">x</span>.
+    </p>
+
+    <div class="equation math centered">
+      q(λ)
+      =
+      inf<sub>x</sub>
+      [ &nbsp; f(x) + g(x, λ) &nbsp; ]
+    </div>
+
+    <p>
+      That is the elimination recipe verbatim: collect the factors touching
+      <span class="math">x</span>, apply <span class="math">x</span>'s
+      operator, keep the boundary <span class="math">{λ}</span> symbolic,
+      record the result as a new factor. The new factor
+      <span class="math">q(λ)</span> has a name — the
+      <strong>Lagrangian dual function</strong>.
+    </p>
+
+    <svg
+      class="diagram"
+      viewBox="0 0 620 190"
+      role="img"
+      aria-label="Eliminating x collapses f and the coupling factor into a single factor q on lambda"
+    >
+      <text x="12" y="28" fill="currentColor" font-size="14">Before eliminating x</text>
+
+      <rect class="factor" x="55" y="55" width="65" height="48" rx="10"/>
+      <circle class="node" cx="205" cy="79" r="25"/>
+      <rect class="factor" x="290" y="55" width="75" height="48" rx="10"/>
+      <circle class="node" cx="455" cy="79" r="25"/>
+
+      <line class="edge" x1="120" y1="79" x2="180" y2="79"/>
+      <line class="edge" x1="230" y1="79" x2="290" y2="79"/>
+      <line class="edge" x1="365" y1="79" x2="430" y2="79"/>
+
+      <text x="87" y="85" text-anchor="middle" fill="currentColor">f</text>
+      <text x="205" y="85" text-anchor="middle" fill="currentColor">x</text>
+      <text x="328" y="85" text-anchor="middle" fill="currentColor">g</text>
+      <text x="455" y="85" text-anchor="middle" fill="currentColor">λ</text>
+
+      <text x="12" y="148" fill="currentColor" font-size="14">After eliminating x</text>
+
+      <rect class="factor" x="290" y="125" width="75" height="48" rx="10"/>
+      <circle class="node" cx="455" cy="149" r="25"/>
+
+      <line class="edge" x1="365" y1="149" x2="430" y2="149"/>
+
+      <text x="328" y="155" text-anchor="middle" fill="currentColor">q</text>
+      <text x="455" y="155" text-anchor="middle" fill="currentColor">λ</text>
+    </svg>
+
+    <h3>Worked example</h3>
+
+    <p>
+      Minimize <span class="math">x² + y²</span> subject to
+      <span class="math">x + y = 2</span>. Build the Lagrangian and
+      eliminate both x and y:
+    </p>
+
+    <div class="equation math">
+      L = x² + y² + λ(x + y − 2)
+      <br><br>
+      inf<sub>x</sub> [ x² + λx ] = −λ²/4
+      <br>
+      inf<sub>y</sub> [ y² + λy ] = −λ²/4
+      <br><br>
+      q(λ) = −λ²/2 − 2λ
+    </div>
+
+    <p>
+      Now maximize that summary over <span class="math">λ</span>:
+    </p>
+
+    <div class="equation math">
+      dq/dλ = −λ − 2 = 0 &nbsp;⇒&nbsp; λ* = −2
+      <br>
+      q(−2) = −2 + 4 = 2
+    </div>
+
+    <p>
+      And directly: <span class="math">x = y = 1</span> gives
+      <span class="math">1 + 1 = 2</span>.
+      <span class="accent">The two agree.</span>
+    </p>
+
+    <h3>Two paths, two answers</h3>
+
+    <p>
+      The <strong>primal path</strong>,
+      <span class="math">inf<sub>x</sub> sup<sub>λ</sub> L(x, λ)</span>,
+      respects the original nesting: the inner
+      <span class="math">sup</span> over λ rebuilds the hard constraint
+      factor, and you are back to the indicator of section 4.
+    </p>
+
+    <p>
+      The <strong>dual path</strong>,
+      <span class="math">sup<sub>λ</sub> inf<sub>x</sub> L(x, λ)</span>,
+      eliminates x first to get <span class="math">q(λ)</span> and then
+      maximizes it. Often far easier — but it is a <em>different order</em>.
+    </p>
+
+    <div class="viz-callout space-y">
+      <div class="math">
+        sup<sub>λ</sub> inf<sub>x</sub> L
+        &nbsp;≤&nbsp;
+        inf<sub>x</sub> sup<sub>λ</sub> L
+        &nbsp;&nbsp;&nbsp;
+        i.e. &nbsp; d* ≤ p*
+      </div>
+
+      <p>
+        This is the <span class="math">sup inf ≤ inf sup</span> inequality
+        again, nothing more. Dualizing is not a cheaper elimination order in
+        the harmless same-operator sense — it <strong>swaps unlike
+        operators</strong>, so in general it only yields a lower bound. The
+        gap <span class="math">p* − d*</span> is the duality gap; closing it
+        requires extra conditions (convexity plus a constraint
+        qualification), which is what a strong duality theorem asserts.
+      </p>
+
+      <p class="muted">
+        In the worked example above the gap was zero — but that was a fact
+        to be checked, not a rule to be assumed.
+      </p>
+    </div>
+
+    <p>
+      For a constrained <span class="math">sup</span> problem everything
+      reflects. There the primal is
+      <span class="math">sup<sub>x</sub> inf<sub>λ</sub> L</span>, the dual
+      is <span class="math">inf<sub>λ</sub> sup<sub>x</sub> L</span>, and
+      the same single inequality now reads the other way round: the dual is
+      an <em>upper</em> bound on the primal. The direction of a duality gap
+      is not a separate fact to memorise — it follows from which side of
+      <span class="math">sup inf ≤ inf sup</span> your problem started on.
+    </p>
+  </section>
+
+
+  <!-- ======================================================
+       7. SUMMARY
+  ======================================================= -->
+
+  <section id="summary">
+    <h2>7. The method in one page</h2>
+
+    <ol>
+      <li><strong>Factor.</strong> Write the cost as a sum of local terms.</li>
+      <li><strong>Draw.</strong> Connect each term to the variables it touches.</li>
+      <li><strong>Annotate.</strong> Attach inf or sup to each variable, in order.</li>
+      <li><strong>Eliminate.</strong> Remove one variable at a time; keep its boundary symbolic.</li>
+      <li><strong>Audit.</strong> If you swapped inf and sup, name the bound or theorem.</li>
+    </ol>
+
+    <p>
+      <strong>
+        Optimization by factor graphs is repeated construction of symbolic
+        boundary functions.
+      </strong>
+      For a variable z with surviving boundary s, build a new factor by
+      applying z's operator while keeping s symbolic:
+    </p>
+
+    <div class="equation math centered">
+      m(s)
+      =
+      O<sub>z</sub>
+      [ &nbsp; local factors involving z and s &nbsp; ]
+    </div>
+
+    <p>
+      Every step above was this formula with different fillings:
+      <span class="math">m₁(x,z)</span> when y was eliminated,
+      <span class="math">m₂(x)</span> when z was,
+      <span class="math">V<sub>k</sub>(x)</span> at every step of the
+      <a href="worked-examples/hjb.html">control chain</a>, and
+      <span class="math">q(λ)</span> when x was eliminated from the
+      Lagrangian — one move, three costumes.
+    </p>
+
+    <p class="muted">
+      The same pattern names things far beyond this page: Bellman value
+      functions in dynamic programming, messages in belief propagation,
+      variable elimination in graphical models, Lagrangian duals in convex
+      optimization. What changes between them is only the operator, the
+      boundary, and whether reordering preserved the original problem.
+    </p>
+  </section>
+
+
+  <!-- ======================================================
+       WORKED EXAMPLES
+  ======================================================= -->
+
+  <section id="worked-examples">
+    <h2>Worked examples</h2>
+
+    <p>
+      Longer derivations that put the whole method to work, each on its own
+      page.
+    </p>
+
+    <a class="card-link" href="worked-examples/hjb.html">
+      <strong>From a factor chain to HJB</strong>
+      Optimal control as an ordinary factor chain on a time mesh. Eliminate
+      right to left to get Bellman's recursion, then let the mesh spacing go
+      to zero and watch the Hamilton–Jacobi–Bellman equation fall out — and
+      then specialize it to a problem where the boundary factor stays
+      writable, and the rest is calculus.
+    </a>
+  </section>
+
+</div>
+</main>
+</body>
+</html>

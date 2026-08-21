@@ -1,0 +1,267 @@
+:root {
+  --viz-panel: #ffffff;
+  --viz-card: #ffffff;
+  --viz-chip-card: #f8fafc;
+  --viz-text: #18181b;
+  --viz-muted: #71717a;
+  --viz-border: #e4e4e7;
+  --viz-accent: #2563eb;
+  --viz-accent-text: #ffffff;
+  --viz-accent-bg: #dbeafe;
+  --viz-accent-bg-subtle: #eff6ff;
+  --viz-series-1: #2563eb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #fafafa;
+  color: var(--viz-text);
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+main {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 56px 28px 120px;
+}
+
+#fg-method {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 42px;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+p,
+li {
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding-left: 22px;
+}
+
+li + li {
+  margin-top: 8px;
+}
+
+.lead {
+  max-width: 820px;
+  font-size: 19px;
+}
+
+.math {
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+}
+
+.muted {
+  color: var(--viz-muted);
+}
+
+.accent {
+  color: var(--viz-accent);
+}
+
+.viz-callout {
+  padding: 18px 20px;
+  border-left: 3px solid var(--viz-accent);
+  background: var(--viz-accent-bg-subtle);
+  border-radius: 10px;
+}
+
+.equation {
+  padding: 18px 20px;
+  border: 1px solid var(--viz-border);
+  border-radius: 12px;
+  background: var(--viz-panel);
+  font-size: 18px;
+  overflow-x: auto;
+}
+
+.equation.centered {
+  text-align: center;
+}
+
+.space-y > * + * {
+  margin-top: 12px;
+}
+
+.diagram {
+  width: 100%;
+  height: auto;
+}
+
+.node {
+  fill: var(--viz-panel);
+  stroke: var(--viz-border);
+  stroke-width: 1.5;
+}
+
+.factor {
+  fill: var(--viz-accent-bg-subtle);
+  stroke: var(--viz-accent);
+  stroke-width: 1.5;
+}
+
+.edge {
+  stroke: var(--viz-muted);
+  stroke-width: 1.5;
+}
+
+pre.code {
+  margin: 0;
+  padding: 16px 20px;
+  border: 1px solid var(--viz-border);
+  border-radius: 12px;
+  background: var(--viz-chip-card);
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+  font-size: 15px;
+  line-height: 1.65;
+  overflow-x: auto;
+}
+
+pre.code .cm {
+  color: var(--viz-muted);
+}
+
+.payoff {
+  border-collapse: collapse;
+  font-size: 16px;
+}
+
+.payoff th,
+.payoff td {
+  padding: 10px 16px;
+  border: 1px solid var(--viz-border);
+  text-align: center;
+}
+
+.payoff th {
+  background: var(--viz-chip-card);
+  font-weight: 600;
+}
+
+@media (max-width: 760px) {
+  main {
+    padding: 36px 18px 80px;
+  }
+
+  #fg-method {
+    gap: 48px;
+  }
+
+  h1 {
+    font-size: 34px;
+  }
+
+  h2 {
+    font-size: 25px;
+  }
+}
+
+a {
+  color: var(--viz-accent);
+}
+
+.backlink {
+  display: inline-block;
+  font-size: 15px;
+  text-decoration: none;
+}
+
+.backlink:hover {
+  text-decoration: underline;
+}
+
+.card-link {
+  display: block;
+  padding: 18px 20px;
+  border: 1px solid var(--viz-border);
+  border-radius: 12px;
+  background: var(--viz-panel);
+  text-decoration: none;
+  color: inherit;
+}
+
+.card-link:hover {
+  border-color: var(--viz-accent);
+}
+
+.card-link strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--viz-accent);
+}
+
+.contents {
+  font-size: 15px;
+  line-height: 2;
+  color: var(--viz-muted);
+}
+
+.contents a {
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.contents a:hover {
+  text-decoration: underline;
+}

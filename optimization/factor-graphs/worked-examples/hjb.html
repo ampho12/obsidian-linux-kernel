@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Worked example: from a factor chain to HJB</title>
+
+  <link rel="stylesheet" href="../style.css" />
+</head>
+
+<body>
+<main>
+<div id="fg-method">
+
+  <section>
+    <a class="backlink" href="../index.html">← Optimization by Factor Graphs</a>
+
+    <h1>From a factor chain to HJB</h1>
+
+    <p class="lead">
+      A worked example. Everything here uses the method from the main page
+      unchanged — <a href="../index.html#factor-graph">factor graphs</a>,
+      <a href="../index.html#elimination">variable elimination</a>, and
+      <a href="../index.html#constraints">constraints as +∞ factors</a> —
+      applied to a problem whose variables form a chain in time. It ends by
+      specializing the result to one particular problem, where the
+      remaining work turns out to be calculus rather than optimization.
+    </p>
+
+    <nav class="contents">
+      <a href="#mesh">Cut time into steps</a> ·
+      <a href="#eliminate">Eliminate from the right</a> ·
+      <a href="#limit">Let the step shrink</a> ·
+      <a href="#lqr">Specializing to a particular problem</a>
+    </nav>
+  </section>
+
+  <section>
+    <p>
+      Everything so far had finitely many variables. Optimal control does
+      not: the thing being chosen is a whole trajectory. Take
+    </p>
+
+    <div class="equation math centered">
+      inf<sub>x(·), u(·)</sub>
+      &nbsp;
+      [
+      &nbsp; φ(x(T))
+      +
+      ∫<sub>0</sub><sup>T</sup> ℓ(x(t), u(t)) dt &nbsp;
+      ]
+    </div>
+
+    <div class="equation math centered">
+      subject to
+      &nbsp;&nbsp;
+      ẋ = f(x, u),
+      &nbsp;&nbsp;
+      x(0) = x<sub>0</sub>
+    </div>
+
+    <p class="muted">
+      One letter is doing double duty here: in this section
+      <span class="math">f</span> is the <em>dynamics</em>, not a cost. The
+      costs are <span class="math">ℓ</span> per unit time and
+      <span class="math">φ</span> at the end. Nothing is assumed about the
+      form of any of the three.
+    </p>
+
+    <p>
+      The tempting move is to invent a special continuous factor graph. It
+      is not necessary. Put the ordinary machinery on a time mesh, run the
+      same elimination, and then let the mesh spacing go to zero — that way
+      you can see exactly which parts survive the limit.
+    </p>
+
+    <h3 id="mesh">Cut time into steps</h3>
+
+    <p>
+      Chop <span class="math">[0, T]</span> into
+      <span class="math">N</span> intervals of length
+      <span class="math">Δt</span>, giving times
+      <span class="math">t<sub>0</sub>, …, t<sub>N</sub></span> and
+      variables <span class="math">x<sub>k</sub></span>,
+      <span class="math">u<sub>k</sub></span>. Over one tiny interval the
+      dynamics say
+    </p>
+
+    <div class="equation math centered">
+      x<sub>k+1</sub>
+      ≈
+      x<sub>k</sub> + Δt · f(x<sub>k</sub>, u<sub>k</sub>)
+    </div>
+
+    <p>
+      That is a rule about which triples
+      <span class="math">(x<sub>k</sub>, u<sub>k</sub>, x<sub>k+1</sub>)</span>
+      are allowed — a constraint. And we already know how to put a
+      constraint in a graph: make it an
+      <span class="math">+∞</span> factor.
+    </p>
+
+    <div class="equation math centered">
+      d<sub>k</sub>(x<sub>k</sub>, u<sub>k</sub>, x<sub>k+1</sub>)
+      =
+      I
+      (
+      &nbsp; x<sub>k+1</sub> = x<sub>k</sub> + Δt · f(x<sub>k</sub>, u<sub>k</sub>) &nbsp;
+      )
+    </div>
+
+    <p>
+      The cost accrued over that interval is a second factor on the same
+      step:
+    </p>
+
+    <div class="equation math centered">
+      ℓ<sub>k</sub>(x<sub>k</sub>, u<sub>k</sub>)
+      =
+      Δt · ℓ(x<sub>k</sub>, u<sub>k</sub>)
+    </div>
+
+    <p>
+      So the whole trajectory problem is an ordinary finite factor graph
+      problem, with every variable carrying
+      <span class="math">inf</span>:
+    </p>
+
+    <div class="equation math centered">
+      inf<sub>u₀, x₁, …, u<sub>N−1</sub>, x<sub>N</sub></sub>
+      &nbsp;
+      [
+      &nbsp; φ(x<sub>N</sub>)
+      +
+      Σ<sub>k</sub>
+      (
+      ℓ<sub>k</sub> + d<sub>k</sub>
+      )
+      &nbsp;
+      ]
+    </div>
+
+    <p>
+      <span class="math">x<sub>0</sub></span> is given, so it is not a
+      variable. The graph is a long chain of identical stages: states along
+      the spine, and at each step a control together with its two factors —
+      the cost <span class="math">ℓ<sub>k</sub></span> and the dynamics
+      <span class="math">d<sub>k</sub></span>.
+    </p>
+
+    <svg
+      class="diagram"
+      viewBox="0 0 620 220"
+      role="img"
+      aria-label="A chain factor graph. Each stage has a dynamics factor d_k joining x_k, u_k and x_k+1, and a cost factor l_k joining x_k and u_k. The chain ends at x_N with a terminal factor phi."
+    >
+      <line class="edge" x1="79" y1="52" x2="118" y2="52"/>
+      <line class="edge" x1="170" y1="52" x2="209" y2="52"/>
+      <line class="edge" x1="257" y1="52" x2="296" y2="52"/>
+      <line class="edge" x1="348" y1="52" x2="378" y2="52"/>
+      <line class="edge" x1="422" y1="52" x2="450" y2="52"/>
+      <line class="edge" x1="498" y1="52" x2="528" y2="52"/>
+
+      <line class="edge" x1="144" y1="76" x2="144" y2="154"/>
+      <line class="edge" x1="322" y1="76" x2="322" y2="154"/>
+
+      <line class="edge" x1="57" y1="76" x2="61" y2="100"/>
+      <line class="edge" x1="88" y1="136" x2="124" y2="166"/>
+      <line class="edge" x1="235" y1="76" x2="239" y2="100"/>
+      <line class="edge" x1="266" y1="136" x2="302" y2="166"/>
+
+      <circle class="node" cx="55" cy="52" r="24"/>
+      <rect class="factor" x="118" y="28" width="52" height="48" rx="10"/>
+      <circle class="node" cx="233" cy="52" r="24"/>
+      <rect class="factor" x="296" y="28" width="52" height="48" rx="10"/>
+      <circle class="node" cx="474" cy="52" r="24"/>
+      <rect class="factor" x="528" y="28" width="52" height="48" rx="10"/>
+
+      <rect class="factor" x="36" y="100" width="52" height="44" rx="10"/>
+      <rect class="factor" x="214" y="100" width="52" height="44" rx="10"/>
+
+      <circle class="node" cx="144" cy="178" r="24"/>
+      <circle class="node" cx="322" cy="178" r="24"/>
+
+      <text x="55" y="58" text-anchor="middle" fill="currentColor" font-size="15">xₖ</text>
+      <text x="144" y="58" text-anchor="middle" fill="currentColor" font-size="15">dₖ</text>
+      <text x="233" y="58" text-anchor="middle" fill="currentColor" font-size="14">xₖ₊₁</text>
+      <text x="322" y="58" text-anchor="middle" fill="currentColor" font-size="14">dₖ₊₁</text>
+      <text x="400" y="58" text-anchor="middle" fill="currentColor" font-size="15">…</text>
+      <text x="474" y="58" text-anchor="middle" fill="currentColor" font-size="15">xₙ</text>
+      <text x="554" y="58" text-anchor="middle" fill="currentColor" font-size="15">φ</text>
+
+      <text x="62" y="128" text-anchor="middle" fill="currentColor" font-size="15">ℓₖ</text>
+      <text x="240" y="128" text-anchor="middle" fill="currentColor" font-size="14">ℓₖ₊₁</text>
+
+      <text x="144" y="184" text-anchor="middle" fill="currentColor" font-size="15">uₖ</text>
+      <text x="322" y="184" text-anchor="middle" fill="currentColor" font-size="14">uₖ₊₁</text>
+    </svg>
+
+    <p class="muted">
+      Every variable carries <span class="math">inf</span>, so there is no
+      operator-order drama in this problem at all. The order is ours to pick
+      purely for structural efficiency.
+    </p>
+
+    <h3 id="eliminate">Eliminate from the right</h3>
+
+    <p>
+      Start at the far end. Keep
+      <span class="math">x<sub>N−1</sub></span> symbolic and eliminate
+      everything to its right:
+    </p>
+
+    <div class="equation math centered">
+      V<sub>N−1</sub>(x<sub>N−1</sub>)
+      =
+      inf<sub>u<sub>N−1</sub>, x<sub>N</sub></sub>
+      [
+      &nbsp; ℓ<sub>N−1</sub>
+      +
+      d<sub>N−1</sub>
+      +
+      φ(x<sub>N</sub>) &nbsp;
+      ]
+    </div>
+
+    <p>
+      Here the <span class="math">+∞</span> factor does real work. Given
+      <span class="math">x<sub>N−1</sub></span> and
+      <span class="math">u<sub>N−1</sub></span>, exactly one value of
+      <span class="math">x<sub>N</sub></span> escapes the infinite penalty,
+      so the inner <span class="math">inf</span> over
+      <span class="math">x<sub>N</sub></span> is not a search — it just
+      substitutes:
+    </p>
+
+    <div class="equation math centered">
+      V<sub>N−1</sub>(x)
+      =
+      inf<sub>u</sub>
+      [
+      &nbsp; Δt · ℓ(x, u)
+      +
+      φ( x + Δt · f(x, u) ) &nbsp;
+      ]
+    </div>
+
+    <p>
+      Which is precisely the elimination move: collect the factors touching
+      the variables being removed, apply <span class="math">inf</span>, keep
+      the boundary symbolic. The boundary here is the single state
+      <span class="math">x<sub>N−1</sub></span>, so what comes back is a new
+      unary factor. Do it again, and again:
+    </p>
+
+    <div class="equation math centered">
+      V<sub>k</sub>(x)
+      =
+      inf<sub>u</sub>
+      [
+      &nbsp; Δt · ℓ(x, u)
+      +
+      V<sub>k+1</sub>( x + Δt · f(x, u) ) &nbsp;
+      ]
+    </div>
+
+    <svg
+      class="diagram"
+      viewBox="0 0 620 300"
+      role="img"
+      aria-label="Before: x_k joined to u_k and x_k+1 by the cost factor l_k and the dynamics factor d_k, with V_k+1 attached to x_k+1. After: a single factor V_k attached to x_k."
+    >
+      <text x="12" y="18" fill="currentColor" font-size="14">Before</text>
+
+      <line class="edge" x1="84" y1="52" x2="123" y2="52"/>
+      <line class="edge" x1="175" y1="52" x2="214" y2="52"/>
+      <line class="edge" x1="262" y1="52" x2="300" y2="52"/>
+      <line class="edge" x1="149" y1="76" x2="149" y2="154"/>
+      <line class="edge" x1="62" y1="76" x2="66" y2="100"/>
+      <line class="edge" x1="93" y1="136" x2="129" y2="166"/>
+
+      <circle class="node" cx="60" cy="52" r="24"/>
+      <rect class="factor" x="123" y="28" width="52" height="48" rx="10"/>
+      <circle class="node" cx="238" cy="52" r="24"/>
+      <rect class="factor" x="300" y="28" width="62" height="48" rx="10"/>
+      <rect class="factor" x="41" y="100" width="52" height="44" rx="10"/>
+      <circle class="node" cx="149" cy="178" r="24"/>
+
+      <text x="60" y="58" text-anchor="middle" fill="currentColor" font-size="15">xₖ</text>
+      <text x="149" y="58" text-anchor="middle" fill="currentColor" font-size="15">dₖ</text>
+      <text x="238" y="58" text-anchor="middle" fill="currentColor" font-size="14">xₖ₊₁</text>
+      <text x="331" y="58" text-anchor="middle" fill="currentColor" font-size="14">Vₖ₊₁</text>
+      <text x="67" y="128" text-anchor="middle" fill="currentColor" font-size="15">ℓₖ</text>
+      <text x="149" y="184" text-anchor="middle" fill="currentColor" font-size="15">uₖ</text>
+
+      <text x="12" y="228" fill="currentColor" font-size="14">After</text>
+
+      <line class="edge" x1="84" y1="270" x2="123" y2="270"/>
+
+      <circle class="node" cx="60" cy="270" r="24"/>
+      <rect class="factor" x="123" y="246" width="62" height="48" rx="10"/>
+
+      <text x="60" y="276" text-anchor="middle" fill="currentColor" font-size="15">xₖ</text>
+      <text x="154" y="276" text-anchor="middle" fill="currentColor" font-size="15">Vₖ</text>
+    </svg>
+
+    <p>
+      That recursion is Bellman's, and we did not derive it — we only
+      eliminated variables right to left. Notice why this order is the good
+      one: at every step the boundary is a single state. It never grows, so
+      the factors never grow, and a chain of a million steps costs a million
+      cheap eliminations.
+    </p>
+
+    <h3 id="limit">Let the step shrink</h3>
+
+    <p>
+      Now send <span class="math">Δt → 0</span>. The number of factor nodes
+      runs off to infinity, and the discrete list
+      <span class="math">V<sub>0</sub>, V<sub>1</sub>, …,
+      V<sub>N</sub></span> is replaced by one continuously indexed symbolic
+      factor <span class="math">V(t, x)</span>. A single infinitesimal
+      elimination step reads:
+    </p>
+
+    <div class="equation math centered">
+      V(t, x)
+      =
+      inf<sub>u</sub>
+      [
+      &nbsp; Δt · ℓ(x, u)
+      +
+      V( t + Δt, &nbsp; x + Δt · f(x, u) ) &nbsp;
+      ]
+    </div>
+
+    <p>
+      Expand that new factor to first order:
+    </p>
+
+    <div class="equation math centered">
+      V(t + Δt, &nbsp; x + Δt·f)
+      =
+      V(t, x)
+      +
+      Δt · ∂V/∂t
+      +
+      Δt · ∇Vᵀ f(x, u)
+      +
+      o(Δt)
+    </div>
+
+    <p>
+      Substitute it in. <span class="math">V(t,x)</span> cancels from both
+      sides, <span class="math">∂V/∂t</span> does not depend on
+      <span class="math">u</span> so it comes out of the
+      <span class="math">inf</span>, and dividing by
+      <span class="math">Δt</span> and letting it vanish leaves:
+    </p>
+
+    <div class="viz-callout space-y">
+      <div class="math">
+        0
+        =
+        ∂V/∂t
+        +
+        inf<sub>u</sub>
+        [
+        &nbsp; ℓ(x, u)
+        +
+        ∇V(t,x)ᵀ f(x, u) &nbsp;
+        ],
+        &nbsp;&nbsp;&nbsp;
+        V(T, x) = φ(x)
+      </div>
+
+      <p>
+        The Hamilton–Jacobi–Bellman equation, with the terminal factor
+        <span class="math">φ</span> surviving as the boundary condition.
+      </p>
+    </div>
+
+    <p>
+      No new optimization mechanism was introduced anywhere along the way:
+    </p>
+
+    <div class="equation math centered">
+      finite factor chain
+      &nbsp;→&nbsp;
+      backward elimination
+      &nbsp;→&nbsp;
+      Bellman recursion
+      &nbsp;→&nbsp;
+      Δt → 0
+      &nbsp;→&nbsp;
+      HJB
+    </div>
+
+    <p>
+      The value function is the symbolic boundary factor. Bellman's
+      recursion is elimination along the chain. HJB is that same elimination
+      written in the continuum limit — a differential statement about how
+      one boundary factor turns into the next.
+    </p>
+
+    <p class="muted">
+      Exact is not the same as cheap. Each
+      <span class="math">V<sub>k</sub></span> is a whole
+      <em>function</em> of the state, so unless the eliminations happen to
+      keep landing inside a family you can write down with finitely many
+      numbers, storing the boundary factor is itself the hard part. That is
+      the same cost question as before — how big does the boundary factor
+      get — asked about a chain that never ends.
+    </p>
+  </section>
+
+
+  <!-- ======================================================
+       SPECIALIZING — LQR
+  ======================================================= -->
+
+  <section id="lqr">
+    <h2>Specializing to a particular problem</h2>
+
+    <p>
+      HJB above holds for whatever <span class="math">f</span>,
+      <span class="math">ℓ</span> and <span class="math">φ</span> you
+      started with. What it does <em>not</em> tell you is how to write
+      <span class="math">V</span> down. That was the caution at the end of
+      the last section: the boundary factor is a whole function of the
+      state, and carrying it around is the real work.
+    </p>
+
+    <p>
+      So pick a problem and ask whether the boundary factor stays inside a
+      family you can store with finitely many numbers. The classical choice
+      is linear dynamics with quadratic costs:
+    </p>
+
+    <div class="equation math centered">
+      ẋ = Ax + Bu,
+      &nbsp;&nbsp;&nbsp;
+      ℓ(x, u) = xᵀQx + uᵀRu,
+      &nbsp;&nbsp;&nbsp;
+      φ(x) = xᵀP<sub>T</sub>x
+    </div>
+
+    <p class="muted">
+      Take <span class="math">R</span> positive definite, so the
+      minimization over <span class="math">u</span> has a finite answer, and
+      <span class="math">Q</span> and <span class="math">P<sub>T</sub></span>
+      positive semidefinite so costs are never negative.
+    </p>
+
+    <p>
+      Everything from here on is substitution and calculus. The optimization
+      was already spent getting to HJB; nothing below reasons about factors,
+      elimination order, or <span class="math">inf</span> versus
+      <span class="math">sup</span> again.
+    </p>
+
+    <h3>Guess that the family closes</h3>
+
+    <p>
+      The terminal factor <span class="math">φ</span> is quadratic in
+      <span class="math">x</span>. If one elimination step sends a quadratic
+      boundary factor to another quadratic boundary factor, then every
+      <span class="math">V</span> along the way is quadratic and the guess
+      is self-consistent. So try
+    </p>
+
+    <div class="equation math centered">
+      V(t, x) = xᵀ P(t) x
+    </div>
+
+    <p>
+      with <span class="math">P(t)</span> symmetric. If it works, the entire
+      infinite-dimensional boundary factor is carried by the finitely many
+      numbers in one matrix — which is the whole reason this case is the one
+      everybody solves.
+    </p>
+
+    <h3>Differentiate</h3>
+
+    <p>
+      Two derivatives are needed, and both are immediate:
+    </p>
+
+    <div class="equation math centered">
+      ∂V/∂t = xᵀ Ṗ(t) x,
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      ∇V(t, x) = 2 P(t) x
+    </div>
+
+    <p>
+      Substituting them into the bracket inside HJB:
+    </p>
+
+    <div class="equation math centered">
+      ℓ(x,u) + ∇Vᵀ f(x,u)
+      =
+      xᵀQx + uᵀRu + 2xᵀP(Ax + Bu)
+    </div>
+
+    <p>
+      Only two of those terms contain <span class="math">u</span>. Minimize
+      them the way you would minimize anything else — set the derivative to
+      zero:
+    </p>
+
+    <div class="equation math centered">
+      ∂/∂u
+      [
+      &nbsp; uᵀRu + 2xᵀPBu &nbsp;
+      ]
+      =
+      2Ru + 2BᵀPx = 0
+      &nbsp;&nbsp;⇒&nbsp;&nbsp;
+      u* = −R⁻¹BᵀPx
+    </div>
+
+    <p>
+      Because <span class="math">R</span> is positive definite this is a
+      genuine minimum, not just a stationary point. Putting
+      <span class="math">u*</span> back in and collecting terms:
+    </p>
+
+    <div class="equation math centered">
+      inf<sub>u</sub>
+      [
+      &nbsp; ℓ + ∇Vᵀ f &nbsp;
+      ]
+      =
+      xᵀ
+      (
+      &nbsp; Q + AᵀP + PA − PBR⁻¹BᵀP &nbsp;
+      )
+      x
+    </div>
+
+    <h3>Match coefficients</h3>
+
+    <p>
+      HJB now says that for <em>every</em> <span class="math">x</span>,
+    </p>
+
+    <div class="equation math centered">
+      0
+      =
+      xᵀ
+      (
+      &nbsp; Ṗ + AᵀP + PA − PBR⁻¹BᵀP + Q &nbsp;
+      )
+      x
+    </div>
+
+    <p>
+      A symmetric quadratic form that vanishes for every
+      <span class="math">x</span> has a zero matrix, so the bracket itself
+      must be zero:
+    </p>
+
+    <div class="viz-callout space-y">
+      <div class="math">
+        −Ṗ = AᵀP + PA − PBR⁻¹BᵀP + Q,
+        &nbsp;&nbsp;&nbsp;
+        P(T) = P<sub>T</sub>
+      </div>
+
+      <p>
+        The Riccati differential equation. Integrate it backwards from
+        <span class="math">T</span> and you have
+        <span class="math">P(t)</span>, and with it the boundary factor at
+        every time.
+      </p>
+    </div>
+
+    <p>
+      The minimizer was computed along the way, so the control comes for
+      free:
+    </p>
+
+    <div class="equation math centered">
+      u*(t, x) = −R⁻¹BᵀP(t) x
+    </div>
+
+    <p>
+      A linear feedback law: measure the state, multiply by a matrix, apply
+      it.
+    </p>
+
+    <h3>What this section was and was not</h3>
+
+    <p>
+      Read back over it. There is no factor graph, no boundary, no
+      elimination order, no <span class="math">inf</span> traded against a
+      <span class="math">sup</span> — only a guessed form, one derivative
+      set to zero, and coefficients matched to produce a differential
+      equation. The optimization content lives entirely in the previous
+      section, and it is the same content for every choice of
+      <span class="math">f</span>, <span class="math">ℓ</span> and
+      <span class="math">φ</span>.
+    </p>
+
+    <p class="muted">
+      Change the problem and HJB does not change; only the answer to “does
+      the boundary factor stay writable?” does. That question has nothing to
+      do with optimization, and for most problems the answer is no — which
+      is why the general case is approximated numerically rather than solved
+      the way this one is.
+    </p>
+  </section>
+</div>
+</main>
+</body>
+</html>
