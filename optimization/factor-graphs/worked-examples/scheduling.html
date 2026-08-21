@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Worked example: sequencing jobs on one machine</title>
+
+  <link rel="stylesheet" href="../style.css" />
+</head>
+
+<body>
+<main>
+<div id="fg-method">
+
+  <section>
+    <a class="backlink" href="../index.html">← Optimization by Factor Graphs</a>
+
+    <h1>Sequencing jobs on one machine</h1>
+
+    <p class="lead">
+      A worked example where the boundary factor is hopeless and stays
+      hopeless — but eliminating just <em>two</em> variables turns out to
+      give an answer that does not depend on the rest of the graph at all.
+      Once that is true, the whole problem collapses to a sort.
+    </p>
+
+    <nav class="contents">
+      <a href="#graph">The graph</a> ·
+      <a href="#elimination">What elimination costs here</a> ·
+      <a href="#window">Eliminate a window of two</a> ·
+      <a href="#sort">Sort</a> ·
+      <a href="#coda">What this was</a>
+    </nav>
+  </section>
+
+  <section id="graph">
+    <h2>The graph</h2>
+
+    <p>
+      One machine, <span class="math">n</span> jobs, run one at a time with
+      no interruptions. Job <span class="math">j</span> occupies the machine
+      for <span class="math">p<sub>j</sub></span> and carries a weight
+      <span class="math">w<sub>j</sub></span> saying how much its lateness
+      matters. If <span class="math">C<sub>j</sub></span> is the moment job
+      <span class="math">j</span> finishes, the cost is
+    </p>
+
+    <div class="equation math centered">
+      Σ<sub>j</sub> w<sub>j</sub> C<sub>j</sub>
+    </div>
+
+    <p>
+      Choosing the order is the whole problem. Three jobs to work with:
+    </p>
+
+    <table class="payoff math">
+      <tr>
+        <th>job</th>
+        <th>p (time)</th>
+        <th>w (weight)</th>
+        <th>w / p</th>
+      </tr>
+      <tr><th>1</th><td>3</td><td>1</td><td>0.33</td></tr>
+      <tr><th>2</th><td>1</td><td>2</td><td>2.00</td></tr>
+      <tr><th>3</th><td>2</td><td>1</td><td>0.50</td></tr>
+    </table>
+
+    <p>
+      To make it a factor graph, write the schedule as a sequence of
+      decisions. Let <span class="math">j<sub>t</sub></span> be the job
+      placed in position <span class="math">t</span>, and let
+      <span class="math">T<sub>t</sub></span> be the clock reading after
+      <span class="math">t</span> jobs have run. Then two factors per
+      position, and both are familiar:
+    </p>
+
+    <div class="equation math centered">
+      d<sub>t</sub>( T<sub>t−1</sub>, j<sub>t</sub>, T<sub>t</sub> )
+      =
+      I
+      (
+      &nbsp; T<sub>t</sub> = T<sub>t−1</sub> + p<sub>j<sub>t</sub></sub> &nbsp;
+      )
+    </div>
+
+    <div class="equation math centered">
+      ℓ<sub>t</sub>( j<sub>t</sub>, T<sub>t</sub> )
+      =
+      w<sub>j<sub>t</sub></sub> · T<sub>t</sub>
+    </div>
+
+    <p>
+      That is exactly the shape of the
+      <a href="hjb.html">control chain</a> — a clock carried forward by a
+      constraint factor, a cost charged at each step, a decision variable
+      hanging off every stage. The clock is the state and the job choice is
+      the control.
+    </p>
+
+    <p>
+      But there is one more factor, and it is the same troublemaker as in
+      the <a href="assignment.html">matching example</a>: every job must be
+      used exactly once, which is a single
+      <span class="math">+∞</span> factor touching every
+      <span class="math">j<sub>t</sub></span> at once. So the graph is a
+      chain with one wide factor glued across the whole of it.
+    </p>
+  </section>
+
+  <section id="elimination">
+    <h2>What elimination costs here</h2>
+
+    <p>
+      Eliminate from the far end, as with the control chain. The boundary
+      after removing the tail is the clock reading plus the set of jobs
+      already used — and given the set, the clock reading is not extra
+      information, since it is just the total of those jobs' processing
+      times. So the boundary is a subset, and the boundary factor holds one
+      number per subset: <span class="math">2<sup>n</sup></span> of them.
+    </p>
+
+    <p>
+      Exact, and no better than the matching problem. Nothing about the
+      elimination order improves it, because the wide factor is attached to
+      everything that remains no matter which end you work from.
+    </p>
+  </section>
+
+  <section id="window">
+    <h2>Eliminate a window of two</h2>
+
+    <p>
+      Here is the move. Do not eliminate all the way to the end. Take two
+      <em>adjacent</em> positions, eliminate only those, and keep the entire
+      rest of the graph symbolic — including the clock reading
+      <span class="math">t</span> at which the pair starts.
+    </p>
+
+    <p>
+      Suppose the two jobs are <span class="math">i</span> and
+      <span class="math">j</span>. Whichever way round they go, they occupy
+      the machine for <span class="math">p<sub>i</sub> + p<sub>j</sub></span>
+      in total, so the clock afterwards is
+      <span class="math">t + p<sub>i</sub> + p<sub>j</sub></span> either
+      way. <strong>The right-hand boundary is identical for both
+      orders</strong>, which is what makes the comparison legitimate — the
+      rest of the graph cannot tell the difference.
+    </p>
+
+    <svg
+      class="diagram"
+      viewBox="0 0 620 320"
+      role="img"
+      aria-label="Before: two adjacent positions with their dynamics and cost factors and job variables, between a start clock t and an end clock. After: a single factor m joining the start clock to the end clock."
+    >
+      <text x="12" y="18" fill="currentColor" font-size="14">Before</text>
+
+      <line class="edge" x1="79" y1="52" x2="118" y2="52"/>
+      <line class="edge" x1="170" y1="52" x2="209" y2="52"/>
+      <line class="edge" x1="257" y1="52" x2="296" y2="52"/>
+      <line class="edge" x1="348" y1="52" x2="387" y2="52"/>
+
+      <line class="edge" x1="144" y1="76" x2="144" y2="154"/>
+      <line class="edge" x1="322" y1="76" x2="322" y2="154"/>
+
+      <line class="edge" x1="57" y1="76" x2="61" y2="100"/>
+      <line class="edge" x1="88" y1="136" x2="124" y2="166"/>
+      <line class="edge" x1="235" y1="76" x2="239" y2="100"/>
+      <line class="edge" x1="266" y1="136" x2="302" y2="166"/>
+
+      <circle class="node" cx="55" cy="52" r="24"/>
+      <rect class="factor" x="118" y="28" width="52" height="48" rx="10"/>
+      <circle class="node" cx="233" cy="52" r="24"/>
+      <rect class="factor" x="296" y="28" width="52" height="48" rx="10"/>
+      <circle class="node" cx="411" cy="52" r="24"/>
+
+      <rect class="factor" x="36" y="100" width="52" height="44" rx="10"/>
+      <rect class="factor" x="214" y="100" width="52" height="44" rx="10"/>
+
+      <circle class="node" cx="144" cy="178" r="24"/>
+      <circle class="node" cx="322" cy="178" r="24"/>
+
+      <text x="55" y="58" text-anchor="middle" fill="currentColor" font-size="15">t</text>
+      <text x="144" y="58" text-anchor="middle" fill="currentColor" font-size="14">d₁</text>
+      <text x="233" y="58" text-anchor="middle" fill="currentColor" font-size="14">T</text>
+      <text x="322" y="58" text-anchor="middle" fill="currentColor" font-size="14">d₂</text>
+      <text x="411" y="58" text-anchor="middle" fill="currentColor" font-size="13">T′</text>
+
+      <text x="62" y="128" text-anchor="middle" fill="currentColor" font-size="14">ℓ₁</text>
+      <text x="240" y="128" text-anchor="middle" fill="currentColor" font-size="14">ℓ₂</text>
+
+      <text x="144" y="184" text-anchor="middle" fill="currentColor" font-size="15">i</text>
+      <text x="322" y="184" text-anchor="middle" fill="currentColor" font-size="15">j</text>
+
+      <text x="12" y="228" fill="currentColor" font-size="14">After</text>
+
+      <line class="edge" x1="79" y1="270" x2="118" y2="270"/>
+      <line class="edge" x1="180" y1="270" x2="221" y2="270"/>
+
+      <circle class="node" cx="55" cy="270" r="24"/>
+      <rect class="factor" x="118" y="246" width="62" height="48" rx="10"/>
+      <circle class="node" cx="245" cy="270" r="24"/>
+
+      <text x="55" y="276" text-anchor="middle" fill="currentColor" font-size="15">t</text>
+      <text x="149" y="276" text-anchor="middle" fill="currentColor" font-size="15">m</text>
+      <text x="245" y="276" text-anchor="middle" fill="currentColor" font-size="13">T′</text>
+    </svg>
+
+    <p>
+      Only two orders are available inside the window, so the eliminated
+      factor is a minimum over two numbers. Running
+      <span class="math">i</span> first, it finishes at
+      <span class="math">t + p<sub>i</sub></span> and
+      <span class="math">j</span> at
+      <span class="math">t + p<sub>i</sub> + p<sub>j</sub></span>:
+    </p>
+
+    <div class="equation math">
+      i then j:
+      &nbsp;&nbsp;
+      w<sub>i</sub>(t + p<sub>i</sub>)
+      +
+      w<sub>j</sub>(t + p<sub>i</sub> + p<sub>j</sub>)
+      <br>
+      j then i:
+      &nbsp;&nbsp;
+      w<sub>j</sub>(t + p<sub>j</sub>)
+      +
+      w<sub>i</sub>(t + p<sub>j</sub> + p<sub>i</sub>)
+    </div>
+
+    <p>
+      Subtract. Every term carrying <span class="math">t</span> appears in
+      both, and so does <span class="math">w<sub>i</sub>p<sub>i</sub></span>
+      and <span class="math">w<sub>j</sub>p<sub>j</sub></span>. What is left
+      is two terms:
+    </p>
+
+    <div class="viz-callout space-y">
+      <div class="math">
+        (i then j) − (j then i)
+        =
+        w<sub>j</sub> p<sub>i</sub> − w<sub>i</sub> p<sub>j</sub>
+      </div>
+
+      <p>
+        The start time is gone. So is everything else in the graph. Which of
+        the two orders is better depends on the two jobs and on nothing
+        else whatsoever.
+      </p>
+    </div>
+
+    <p>
+      That is the entire content of this example. An elimination whose
+      <em>answer</em> is independent of its boundary is a decision you can
+      make once, locally, without ever discovering what the boundary is.
+    </p>
+
+    <p class="muted">
+      On the instance above, with jobs 1 and 2:
+      <span class="math">w<sub>2</sub>p<sub>1</sub> − w<sub>1</sub>p<sub>2</sub>
+      = 2·3 − 1·1 = 5</span>, so putting job 2 first saves 5 — whether the
+      pair starts at <span class="math">t = 0</span>, at
+      <span class="math">t = 2</span>, or anywhere else.
+    </p>
+  </section>
+
+  <section id="sort">
+    <h2>Sort</h2>
+
+    <p>
+      Rearrange the comparison. Job <span class="math">i</span> belongs
+      before job <span class="math">j</span> exactly when
+      <span class="math">w<sub>j</sub>p<sub>i</sub> ≤
+      w<sub>i</sub>p<sub>j</sub></span>, and dividing through by
+      <span class="math">p<sub>i</sub>p<sub>j</sub></span> puts it in a form
+      that involves each job separately:
+    </p>
+
+    <div class="equation math centered">
+      w<sub>i</sub> / p<sub>i</sub>
+      &nbsp;≥&nbsp;
+      w<sub>j</sub> / p<sub>j</sub>
+    </div>
+
+    <p>
+      Each job now carries a single number, and the pairwise rule is just
+      the ordering of those numbers. That consistency is what makes the
+      local decisions compose: take any schedule that is not sorted by
+      <span class="math">w/p</span>, find an adjacent pair in the wrong
+      order, and swap it. The cost does not increase, and nothing outside
+      the pair moves. Repeat until no such pair exists and you have the
+      sorted schedule, which is therefore at least as good as whatever you
+      started with.
+    </p>
+
+    <div class="viz-callout space-y">
+      <div class="math">
+        Run the jobs in decreasing order of w<sub>j</sub> / p<sub>j</sub>.
+      </div>
+
+      <p>
+        Smith's rule. Heavy jobs first, long jobs last, and the ratio says
+        how to trade the two off against each other.
+      </p>
+    </div>
+
+    <p>
+      On the instance the ratios are
+      <span class="math">2.00, 0.50, 0.33</span> for jobs 2, 3, 1, so the
+      order is <span class="math">2, 3, 1</span> — finishing at
+      <span class="math">1, 3, 6</span> for a cost of
+      <span class="math">2·1 + 1·3 + 1·6 = 11</span>. All six orders, for
+      comparison:
+    </p>
+
+    <table class="payoff math">
+      <tr><th>order</th><th>completion times</th><th>cost</th></tr>
+      <tr><th class="accent">2, 3, 1</th><td>1, 3, 6</td><td class="accent">11</td></tr>
+      <tr><th>2, 1, 3</th><td>1, 4, 6</td><td>12</td></tr>
+      <tr><th>3, 2, 1</th><td>2, 3, 6</td><td>14</td></tr>
+      <tr><th>1, 2, 3</th><td>3, 4, 6</td><td>17</td></tr>
+      <tr><th>3, 1, 2</th><td>2, 5, 6</td><td>19</td></tr>
+      <tr><th>1, 3, 2</th><td>3, 5, 6</td><td>20</td></tr>
+    </table>
+  </section>
+
+  <section id="coda">
+    <h2>What this was</h2>
+
+    <p>
+      The exponential boundary never went away. We simply never had to look
+      at it: a two-variable elimination answered without consulting it, and
+      that was enough to order the whole sequence. After that observation
+      the remaining work is a sort — <span class="math">n log n</span>, no
+      optimization reasoning of any kind.
+    </p>
+
+    <p>
+      It is worth being precise about what did the work, because it is
+      fragile. Two things had to hold. The window's two orders had to leave
+      the right-hand boundary identical, so the comparison was allowed to
+      ignore the rest of the graph. And the resulting criterion had to be a
+      consistent ordering of jobs, so that the pairwise decisions could all
+      be satisfied at once.
+    </p>
+
+    <p class="muted">
+      Break either and the trick evaporates. Give the jobs release times
+      before which they cannot start, or deadlines, and the two orders no
+      longer end at the same clock reading — the comparison starts depending
+      on <span class="math">t</span>, no ordering of jobs can express it,
+      and you are back to a boundary indexed by subsets. Sequencing problems
+      are mostly hard; this one is famous because it is not.
+    </p>
+  </section>
+
+</div>
+</main>
+</body>
+</html>

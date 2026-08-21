@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Worked example: matching jobs to workers</title>
+
+  <link rel="stylesheet" href="../style.css" />
+</head>
+
+<body>
+<main>
+<div id="fg-method">
+
+  <section>
+    <a class="backlink" href="../index.html">← Optimization by Factor Graphs</a>
+
+    <h1>Matching jobs to workers</h1>
+
+    <p class="lead">
+      A worked example where <a href="../index.html#elimination">variable
+      elimination</a> is of no help at all — and
+      <a href="../index.html#pricing">pricing the constraint</a> is what
+      rescues it. The graph here is the opposite of a chain: a single factor
+      touches every variable at once.
+    </p>
+
+    <nav class="contents">
+      <a href="#graph">The graph</a> ·
+      <a href="#elimination">What elimination costs here</a> ·
+      <a href="#prices">Price the workers</a> ·
+      <a href="#certificate">Reading the prices</a> ·
+      <a href="#coda">What this was</a>
+    </nav>
+  </section>
+
+  <section id="graph">
+    <h2>The graph</h2>
+
+    <p>
+      There are <span class="math">n</span> jobs and
+      <span class="math">m</span> workers. Putting job
+      <span class="math">i</span> on worker <span class="math">k</span>
+      costs <span class="math">c(i, k)</span>. Every job needs a worker, and
+      no worker can take two jobs. Minimize the total.
+    </p>
+
+    <p>
+      One variable per job, <span class="math">a<sub>i</sub></span>, holding
+      the worker it went to. The costs are then unary factors — one per job,
+      each looking at that job alone:
+    </p>
+
+    <div class="equation math centered">
+      f<sub>i</sub>(a<sub>i</sub>) = c(i, a<sub>i</sub>)
+    </div>
+
+    <p>
+      If that were the whole problem the graph would fall into
+      <span class="math">n</span> disconnected pieces and every job would
+      independently take its cheapest worker. Try it on this instance:
+    </p>
+
+    <table class="payoff math">
+      <tr>
+        <th>c(i, k)</th>
+        <th>worker 1</th>
+        <th>worker 2</th>
+        <th>worker 3</th>
+      </tr>
+      <tr><th>job 1</th><td>4</td><td class="accent">2</td><td>8</td></tr>
+      <tr><th>job 2</th><td>4</td><td class="accent">3</td><td>7</td></tr>
+      <tr><th>job 3</th><td>9</td><td>5</td><td class="accent">1</td></tr>
+    </table>
+
+    <p>
+      Row by row the cheapest choices are
+      <span class="math">2 + 3 + 1 = 6</span> — but jobs 1 and 2 both grabbed
+      worker 2, which is not allowed. The rule that forbids it is a
+      constraint, so by the
+      <a href="../index.html#constraints">usual device</a> it becomes a
+      factor that is <span class="math">0</span> on assignments where all
+      the <span class="math">a<sub>i</sub></span> differ and
+      <span class="math">+∞</span> otherwise.
+    </p>
+
+    <p>
+      And there is the problem. That factor does not touch two variables, or
+      three. It touches <em>all</em> of them:
+    </p>
+
+    <svg
+      class="diagram"
+      viewBox="0 0 620 250"
+      role="img"
+      aria-label="Three job variables, each with its own unary cost factor, all three also attached to a single large distinctness factor"
+    >
+      <line class="edge" x1="114" y1="45" x2="174" y2="45"/>
+      <line class="edge" x1="114" y1="125" x2="174" y2="125"/>
+      <line class="edge" x1="114" y1="205" x2="174" y2="205"/>
+
+      <line class="edge" x1="226" y1="45" x2="330" y2="105"/>
+      <line class="edge" x1="226" y1="125" x2="330" y2="125"/>
+      <line class="edge" x1="226" y1="205" x2="330" y2="145"/>
+
+      <rect class="factor" x="60" y="21" width="54" height="48" rx="10"/>
+      <rect class="factor" x="60" y="101" width="54" height="48" rx="10"/>
+      <rect class="factor" x="60" y="181" width="54" height="48" rx="10"/>
+
+      <circle class="node" cx="200" cy="45" r="26"/>
+      <circle class="node" cx="200" cy="125" r="26"/>
+      <circle class="node" cx="200" cy="205" r="26"/>
+
+      <rect class="factor" x="330" y="81" width="110" height="88" rx="10"/>
+
+      <text x="87" y="51" text-anchor="middle" fill="currentColor" font-size="15">f₁</text>
+      <text x="87" y="131" text-anchor="middle" fill="currentColor" font-size="15">f₂</text>
+      <text x="87" y="211" text-anchor="middle" fill="currentColor" font-size="15">f₃</text>
+
+      <text x="200" y="51" text-anchor="middle" fill="currentColor" font-size="15">a₁</text>
+      <text x="200" y="131" text-anchor="middle" fill="currentColor" font-size="15">a₂</text>
+      <text x="200" y="211" text-anchor="middle" fill="currentColor" font-size="15">a₃</text>
+
+      <text x="385" y="131" text-anchor="middle" fill="currentColor" font-size="14">all distinct</text>
+    </svg>
+
+    <p class="muted">
+      Every scrap of coupling in this problem lives in that one box. Remove
+      it and the problem is trivial; keep it and nothing is local.
+    </p>
+  </section>
+
+  <section id="elimination">
+    <h2>What elimination costs here</h2>
+
+    <p>
+      Run the recipe anyway. To eliminate
+      <span class="math">a<sub>3</sub></span>, collect the factors attached
+      to it: <span class="math">f<sub>3</sub></span> and the distinctness
+      factor. The surviving boundary is every other variable in the problem,
+      so the new factor is as wide as the one we started with. The graph did
+      not get smaller. No elimination order fixes this, because there is no
+      order in which that factor is not attached to everything left.
+    </p>
+
+    <p>
+      What the remaining problem actually needs to know is less than the
+      full history, though. Assign jobs one at a time and the only thing the
+      rest depends on is <em>which workers are still free</em>. So the
+      honest boundary is a set, and the boundary factor is indexed by
+      subsets:
+    </p>
+
+    <div class="equation math centered">
+      V(S) = cheapest way to finish the remaining jobs using only the free
+      workers S
+    </div>
+
+    <div class="equation math centered">
+      V(S)
+      =
+      min<sub>k ∈ S</sub>
+      [ &nbsp; c(i, k) + V(S \ {k}) &nbsp; ]
+    </div>
+
+    <p>
+      That is exact, and it beats trying all
+      <span class="math">m!</span> assignments — but it stores one number
+      per subset, so it is <span class="math">2<sup>m</sup></span> of them.
+      This is the warning from the control chain in its sharpest form: the
+      elimination is correct and the boundary factor is unwritable.
+    </p>
+  </section>
+
+  <section id="prices">
+    <h2>Price the workers</h2>
+
+    <p>
+      So stop eliminating and use the other tool. The rule being enforced is
+      that worker <span class="math">k</span> is used exactly once, so give
+      each worker a price <span class="math">λ<sub>k</sub></span> and charge
+      it to whoever takes that worker. The Lagrangian collects into one term
+      per job plus a constant:
+    </p>
+
+    <div class="equation math centered">
+      L(a, λ)
+      =
+      Σ<sub>i</sub>
+      [ &nbsp; c(i, a<sub>i</sub>) + λ<sub>a<sub>i</sub></sub> &nbsp; ]
+      −
+      Σ<sub>k</sub> λ<sub>k</sub>
+    </div>
+
+    <p>
+      Here <span class="math">λ<sub>k</sub></span> is not a metaphor — it is
+      a price on a worker, in the same units as the costs. And look at what
+      it did to the picture. The one wide factor is gone. In its place is a
+      new variable and one small factor per job:
+    </p>
+
+    <svg
+      class="diagram"
+      viewBox="0 0 620 250"
+      role="img"
+      aria-label="After pricing: each job variable has its cost factor and a small pricing factor, and all the pricing factors attach to a single shared lambda variable"
+    >
+      <line class="edge" x1="70" y1="45" x2="114" y2="45"/>
+      <line class="edge" x1="70" y1="125" x2="114" y2="125"/>
+      <line class="edge" x1="70" y1="205" x2="114" y2="205"/>
+
+      <line class="edge" x1="166" y1="45" x2="240" y2="45"/>
+      <line class="edge" x1="166" y1="125" x2="240" y2="125"/>
+      <line class="edge" x1="166" y1="205" x2="240" y2="205"/>
+
+      <line class="edge" x1="294" y1="45" x2="394" y2="111"/>
+      <line class="edge" x1="294" y1="125" x2="392" y2="125"/>
+      <line class="edge" x1="294" y1="205" x2="394" y2="139"/>
+
+      <rect class="factor" x="20" y="21" width="50" height="48" rx="10"/>
+      <rect class="factor" x="20" y="101" width="50" height="48" rx="10"/>
+      <rect class="factor" x="20" y="181" width="50" height="48" rx="10"/>
+
+      <circle class="node" cx="140" cy="45" r="26"/>
+      <circle class="node" cx="140" cy="125" r="26"/>
+      <circle class="node" cx="140" cy="205" r="26"/>
+
+      <rect class="factor" x="240" y="21" width="54" height="48" rx="10"/>
+      <rect class="factor" x="240" y="101" width="54" height="48" rx="10"/>
+      <rect class="factor" x="240" y="181" width="54" height="48" rx="10"/>
+
+      <circle class="node" cx="420" cy="125" r="28"/>
+
+      <text x="45" y="51" text-anchor="middle" fill="currentColor" font-size="15">f₁</text>
+      <text x="45" y="131" text-anchor="middle" fill="currentColor" font-size="15">f₂</text>
+      <text x="45" y="211" text-anchor="middle" fill="currentColor" font-size="15">f₃</text>
+
+      <text x="140" y="51" text-anchor="middle" fill="currentColor" font-size="15">a₁</text>
+      <text x="140" y="131" text-anchor="middle" fill="currentColor" font-size="15">a₂</text>
+      <text x="140" y="211" text-anchor="middle" fill="currentColor" font-size="15">a₃</text>
+
+      <text x="267" y="51" text-anchor="middle" fill="currentColor" font-size="15">g₁</text>
+      <text x="267" y="131" text-anchor="middle" fill="currentColor" font-size="15">g₂</text>
+      <text x="267" y="211" text-anchor="middle" fill="currentColor" font-size="15">g₃</text>
+
+      <text x="420" y="131" text-anchor="middle" fill="currentColor" font-size="16">λ</text>
+    </svg>
+
+    <p>
+      Now eliminate the jobs. Hold <span class="math">λ</span> symbolic and
+      the <span class="math">a<sub>i</sub></span> are no longer tied to each
+      other at all — each one is a separate little problem, and each job
+      simply takes whichever worker is cheapest <em>once the price is
+      added</em>:
+    </p>
+
+    <div class="equation math centered">
+      q(λ)
+      =
+      Σ<sub>i</sub>
+      min<sub>k</sub>
+      [ &nbsp; c(i, k) + λ<sub>k</sub> &nbsp; ]
+      −
+      Σ<sub>k</sub> λ<sub>k</sub>
+    </div>
+
+    <p>
+      That is the whole trade. One factor of arity <span class="math">n</span>
+      became one shared variable, and in exchange the elimination that was
+      impossible became <span class="math">n</span> independent minimizations
+      over <span class="math">m</span> numbers each. As always this is the
+      <a href="../index.html#duality">dual order</a>,
+      <span class="math">sup<sub>λ</sub> inf<sub>a</sub></span>, so
+      <span class="math">q(λ)</span> is a lower bound on the true optimum for
+      every choice of prices.
+    </p>
+  </section>
+
+  <section id="certificate">
+    <h2>Reading the prices</h2>
+
+    <p>
+      Start with all prices at zero. Then
+      <span class="math">q(0)</span> is just the sum of row minima —
+      <span class="math">6</span> — the disconnected answer from earlier,
+      now revealed as the weakest possible bound.
+    </p>
+
+    <p>
+      Now raise the price of the contested worker. Take
+      <span class="math">λ = (0, 1, 0)</span> and add it to each row:
+    </p>
+
+    <table class="payoff math">
+      <tr>
+        <th>c(i, k) + λ<sub>k</sub></th>
+        <th>worker 1</th>
+        <th>worker 2</th>
+        <th>worker 3</th>
+        <th>picks</th>
+      </tr>
+      <tr><th>job 1</th><td>4</td><td class="accent">3</td><td>8</td><td>worker 2</td></tr>
+      <tr><th>job 2</th><td class="accent">4</td><td>4</td><td>7</td><td>worker 1</td></tr>
+      <tr><th>job 3</th><td>9</td><td>6</td><td class="accent">1</td><td>worker 3</td></tr>
+    </table>
+
+    <p>
+      Each job chose independently, and between them they used each worker
+      exactly once. The choices are feasible by accident of the prices, not
+      because anyone enforced it. Adding up:
+    </p>
+
+    <div class="equation math centered">
+      q(0,1,0)
+      =
+      (3 + 4 + 1) − (0 + 1 + 0)
+      =
+      7
+    </div>
+
+    <p>
+      And that settles the problem. When the independently priced choices
+      happen to form a valid assignment, the prices paid cancel against the
+      <span class="math">−Σλ<sub>k</sub></span>, so
+      <span class="math">q(λ)</span> equals the actual cost of that
+      assignment. A lower bound that is achieved by a feasible point is the
+      answer:
+    </p>
+
+    <div class="viz-callout math">
+      7 = q(λ) ≤ d* ≤ p* ≤ cost of that assignment = 7
+    </div>
+
+    <p>
+      So the optimum is <span class="math">7</span> — job 1 to worker 2, job
+      2 to worker 1, job 3 to worker 3 — and the three numbers
+      <span class="math">(0, 1, 0)</span> are a proof of it that anyone can
+      check in a few seconds, without searching anything.
+    </p>
+
+    <p class="muted">
+      Job 2 was indifferent between workers 1 and 2 at those prices, and we
+      broke the tie in the convenient direction. Ties are not a nuisance
+      here, they are the mechanism — the algorithms that find such prices,
+      the Hungarian method and the auction algorithm, spend their time
+      nudging prices until enough ties appear for a feasible set of choices
+      to exist.
+    </p>
+  </section>
+
+  <section id="coda">
+    <h2>What this was</h2>
+
+    <p>
+      The method did not solve this problem, and that is the point of
+      including it. What it did was locate the difficulty exactly: one
+      factor of full arity, so no elimination order helps and the honest
+      boundary is a subset of workers. That diagnosis is what tells you to
+      stop eliminating and start pricing.
+    </p>
+
+    <p>
+      Pricing then did something structural rather than numerical — it
+      disconnected the graph. After that the remaining work is searching for
+      good prices, which is algorithm design, and no more factor-graph
+      reasoning enters.
+    </p>
+
+    <p class="muted">
+      Worth comparing with the
+      <a href="hjb.html#lqr">linear-quadratic case</a>. There the boundary
+      factor stayed writable because it never left the quadratic family.
+      Here it stays writable because pricing removed the factor that made it
+      wide. Two different escapes from the same wall.
+    </p>
+  </section>
+
+</div>
+</main>
+</body>
+</html>

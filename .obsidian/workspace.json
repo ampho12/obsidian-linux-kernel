@@ -101,12 +101,14 @@
             "id": "afb5f2fd34a9a9aa",
             "type": "leaf",
             "state": {
-              "type": "release-notes",
+              "type": "split-diff-view",
               "state": {
-                "currentVersion": "1.13.6"
+                "aFile": "Optimisation Master Draft.md",
+                "bFile": "Optimisation Master Draft.md",
+                "aRef": ""
               },
-              "icon": "lucide-book-up",
-              "title": "Release Notes 1.13.6"
+              "icon": "diff",
+              "title": "Diff: Optimisation Master Draft  (Working Tree)"
             }
           }
         ],
@@ -271,11 +273,15 @@
       "obsidian-livesync:P2P Replicator": false,
       "obsidian-livesync:Replicate": false,
       "obsidian-livesync:Show Log": false,
-      "obsidian-git:Open Git source control": false
+      "obsidian-git:Open Git source control": false,
+      "obsidian-livesync:Show Customization sync": false
     }
   },
-  "active": "afb5f2fd34a9a9aa",
+  "active": "b708801a90ba2938",
   "lastOpenFiles": [
+    "optimization/factor-graphs/worked-examples/scheduling.html",
+    "optimization/factor-graphs/worked-examples/assignment.html",
+    "Optimisation Master Draft.md",
     "cad-matching-notes.html",
     "optimization/Legendre Transform.md",
     "optimization/Cad Matching.md",
@@ -305,18 +311,15 @@
     "business/Monaco Meeting.md",
     "business/Datacenter Numbers.md",
     "business/diary-of-a-cto/2026-05-27.md",
-    "business/diary-of-a-cto/2026-05-26.md",
     "business/diary-of-a-cto",
     "classical-mechanics/analytical-mechanics/geometric-mechanics",
     "classical-mechanics/analytical-mechanics",
     "classical-mechanics",
     "machine-learning/notes/attachments/Pasted image 20260506120239.png",
     "human-nature",
-    "machine-learning/Flow Prediction",
     "machine-learning/notes/attachments/Pasted image 20260402003122.png",
     "machine-learning/notes/attachments/Pasted image 20260402003251.png",
     "machine-learning/notes/attachments/Pasted image 20260402000251.png",
-    "machine-learning/notes/attachments",
     "machine-learning/pi0/attachments/Pasted image 20260212021617.png",
     "machine-learning/pi0/Untitled.canvas",
     "underactuated-robotics/linear-time-invariant/attachments/Pasted image 20260129020425.png",
