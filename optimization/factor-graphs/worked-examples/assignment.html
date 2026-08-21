@@ -21,9 +21,9 @@
     <p class="lead">
       A worked example where <a href="../index.html#elimination">variable
       elimination</a> is of no help at all — and
-      <a href="../index.html#pricing">pricing the constraint</a> is what
-      rescues it. The graph here is the opposite of a chain: a single factor
-      touches every variable at once.
+      <a href="../index.html#pricing">pricing the constraint</a> does not
+      merely bound the answer but produces it exactly. The graph here is the
+      opposite of a chain: a single factor touches every variable at once.
     </p>
 
     <nav class="contents">
@@ -271,9 +271,10 @@
       impossible became <span class="math">n</span> independent minimizations
       over <span class="math">m</span> numbers each. As always this is the
       <a href="../index.html#duality">dual order</a>,
-      <span class="math">sup<sub>λ</sub> inf<sub>a</sub></span>, so
-      <span class="math">q(λ)</span> is a lower bound on the true optimum for
-      every choice of prices.
+      <span class="math">sup<sub>λ</sub> inf<sub>a</sub></span>, so on the
+      general argument <span class="math">q(λ)</span> is only a lower bound
+      on the true optimum, whatever the prices. Hold that thought — for this
+      particular problem it turns out to lose nothing.
     </p>
   </section>
 
@@ -307,8 +308,8 @@
 
     <p>
       Each job chose independently, and between them they used each worker
-      exactly once. The choices are feasible by accident of the prices, not
-      because anyone enforced it. Adding up:
+      exactly once. Nothing enforced that — the prices alone made the
+      independent choices consistent. Adding up:
     </p>
 
     <div class="equation math centered">
@@ -347,24 +348,84 @@
       nudging prices until enough ties appear for a feasible set of choices
       to exist.
     </p>
+
+    <h3>Such prices always exist</h3>
+
+    <p>
+      It would be easy to read the last section as a lucky instance: the
+      prices happened to line up, the bound happened to be tight. It is not
+      luck. For this problem the swap of
+      <span class="math">inf</span> and <span class="math">sup</span> costs
+      nothing at all —
+    </p>
+
+    <div class="viz-callout math">
+      sup<sub>λ</sub> inf<sub>a</sub> L
+      &nbsp;=&nbsp;
+      inf<sub>a</sub> sup<sub>λ</sub> L,
+      &nbsp;&nbsp;&nbsp;
+      d* = p*
+    </div>
+
+    <p>
+      — so prices that make the independent choices consistent are
+      guaranteed to exist, for every cost matrix, and the ones that do
+      always certify an optimal assignment. Pricing is therefore not a
+      relaxation of this problem to be checked afterwards. It <em>is</em> a
+      solution method, and the Hungarian and auction algorithms are exact
+      rather than heuristic for exactly this reason.
+    </p>
+
+    <p>
+      The reason the gap closes is a fact about the shape of this problem,
+      not about optimization. Once the prices are pulled out, the inner
+      choice — each job picks one worker, independently — is as unrestrictive
+      as it could be, so the dual is worth the same as the problem you get by
+      letting the assignment be fractional. And a fractional assignment buys
+      nothing: the corners of the set of doubly stochastic matrices are
+      exactly the permutations, so an optimum can always be found at an
+      honest whole assignment. Nothing in between is ever needed.
+    </p>
+
+    <p class="muted">
+      That last step is Birkhoff and von Neumann's theorem, and it is doing
+      real work — it is the difference between a bound and an answer. It is
+      also easily lost. Bolt almost any side condition onto the problem, a
+      budget shared across the assignment or a rule coupling two particular
+      jobs, and the corners generally stop being whole assignments. The
+      equality above fails, the prices give a strictly weaker bound, and a
+      search comes back.
+    </p>
   </section>
 
   <section id="coda">
     <h2>What this was</h2>
 
     <p>
-      The method did not solve this problem, and that is the point of
-      including it. What it did was locate the difficulty exactly: one
-      factor of full arity, so no elimination order helps and the honest
-      boundary is a subset of workers. That diagnosis is what tells you to
-      stop eliminating and start pricing.
+      Elimination was useless here, and the method said so precisely: one
+      factor of full arity, attached to everything under every ordering, so
+      the honest boundary is a subset of workers. That diagnosis is what
+      tells you to stop eliminating and start pricing.
     </p>
 
     <p>
       Pricing then did something structural rather than numerical — it
-      disconnected the graph. After that the remaining work is searching for
-      good prices, which is algorithm design, and no more factor-graph
-      reasoning enters.
+      disconnected the graph, replacing one factor of arity
+      <span class="math">n</span> with a shared variable and
+      <span class="math">n</span> independent choices. Because the gap
+      closes, that is the end of the matter: the answer is exactly a
+      question about prices, and all that remains is an algorithm for
+      finding them.
+    </p>
+
+    <p>
+      This is also the
+      <a href="../index.html#summary">last item on the checklist</a> being
+      discharged rather than waved at. We swapped an
+      <span class="math">inf</span> past a <span class="math">sup</span>,
+      which in general forfeits equality, so we owed a reason — and here
+      there is one, resting on a property of this problem that has nothing
+      to do with optimization.
     </p>
 
     <p class="muted">
